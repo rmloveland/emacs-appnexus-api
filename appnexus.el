@@ -127,8 +127,10 @@ URL is a string."
 (defun buf2json ()
   "Convert the current buffer to JSON, and open in a temp buffer."
   (interactive)
-  (let ((it (read (buffer-string))))
-  (print-buf "$json" (json-encode it))))
+  (let ((it (read (buffer-string)))
+	(bufname (concat "*json-" (number-to-string (random 1000)) "*")))
+    (print-buf bufname (json-encode it))
+    (switch-to-buffer bufname)))
 
 (defun buf-do (verb service+params)
   "Send the HTTP request via VERB, with SERVICE+PARAMS."
