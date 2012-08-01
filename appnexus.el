@@ -121,7 +121,8 @@ URL is a string."
 	(select-frame-set-input-focus (window-frame (selected-window)))))
     (setq buffer-offer-save t)
     (put 'buffer-offer-save 'permanent-local t)
-    (set-buffer-modified-p nil)))
+    (set-buffer-modified-p nil)
+    (print thing buf)))
 
 (defun buf2json ()
   "Convert the current buffer to JSON, and open in a temp buffer."
