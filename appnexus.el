@@ -28,6 +28,7 @@
     (:username ,an-username
 	       :password ,an-password)))
 
+(defvar *an-current-url* *an-sandbox-url*)
 (defvar *an-production-url* "http://api.appnexus.com")
 (defvar *an-sandbox-url* "http://api.sand-08.adnxs.net")
 
@@ -92,7 +93,7 @@ URL is a string."
 	     (an-request "POST"
 			 (or payload
 			     `(:auth (:username ,an-username :password ,an-password)))
-			 *an-sandbox-url*
+			 *an-current-url*
 			 "auth")))
 
 (defun print-buf (bufname thing)
@@ -135,7 +136,7 @@ URL is a string."
     (print-buf (concat "*" service+params "*")
 	       (an-request verb
 			   payload
-			   *an-sandbox-url*
+			   *an-current-url*
 			   service+params))))
 
 (defun an-get (service+params)
@@ -144,7 +145,7 @@ URL is a string."
   (print-buf (concat "*" service+params "*")
 	     (an-request "GET"
 			 ""
-			 *an-sandbox-url*
+			 *an-current-url*
 			 service+params)))
 
 (defun an-switchto (user-id)
@@ -153,13 +154,13 @@ URL is a string."
   (print-buf "*an-switchto*"
 	     (an-request "POST"
 			 `(:auth (:switch_to_user ,user-id))
-			 *an-sandbox-url*
+			 *an-current-url*
 			 "auth")))
 
 (defun an-who ()
   "Find out what user you are; open in new buffer."
   (interactive)
-  (print-buf "*an-who*" (an-request "GET" nil *an-sandbox-url* "user?current")))
+  (print-buf "*an-who*" (an-request "GET" nil *an-current-url* "user?current")))
 
 (global-set-key (kbd "C-x C-A A") 'an-auth)
 (global-set-key (kbd "C-x C-A S") 'an-switchto)
