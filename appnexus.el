@@ -112,7 +112,7 @@ URL is a string."
       (set-buffer buf)
       (funcall mode))
     (if other-frame
-	(switch-to-buffer-other-frame buf)
+	(switch-to-buffer-other-window buf)
       (let ((one-buffer-one-frame-force one-buffer-one-frame-mode))
 	;; change window in case its unsuitable (dedicated or special display)
 	(select-window (get-window-for-other-buffer))
