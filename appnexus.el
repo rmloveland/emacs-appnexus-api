@@ -134,10 +134,11 @@ URL is a string."
 (defun smart-buf2json ()
   "Convert the current buffer to JSON (without the escaped double quotes), and open in a temp buffer."
   (interactive)
-  (let ((it (read (buffer-string)))
+  (let* ((it (read (buffer-string)))
+	(content (json-encode it))
 	(bufname (concat "*json-" (number-to-string (random 1000)) "*"))
 	(mode 'js-mode))
-    (smart-print-buf bufname (json-encode it) mode)))
+    (smart-print-buf bufname content mode)))
 
 (defun buf2lsp ()
   "Convert the current buffer to Lisp, and open in a temp buffer."
