@@ -129,8 +129,7 @@ URL is a string."
   (interactive)
   (let ((it (read (buffer-string)))
 	(bufname (concat "*json-" (number-to-string (random 1000)) "*")))
-    (print-buf bufname (json-encode it))
-    (switch-to-buffer bufname)))
+    (print-buf bufname (json-encode it))))
 
 (defun buf2lsp ()
   "Convert the current buffer to Lisp, and open in a temp buffer."
