@@ -101,7 +101,7 @@ URL is a string."
   (with-output-to-temp-buffer bufname
     (print thing)))
 
-(defun new-empty-buffer (bufname thing mode)
+(defun smart-print-buf (bufname thing mode)
   "Not finished yet. I need to finish it so I can have results buffers that retain undo information."
   (interactive)
   (let ((buf (generate-new-buffer bufname))
@@ -126,6 +126,13 @@ URL is a string."
 
 (defun buf2json ()
   "Convert the current buffer to JSON, and open in a temp buffer."
+  (interactive)
+  (let ((it (read (buffer-string)))
+	(bufname (concat "*json-" (number-to-string (random 1000)) "*")))
+    (print-buf bufname (json-encode it))))
+
+(defun smart-buf2json ()
+  "Convert the current buffer to JSON (without the escaped double quotes), and open in a temp buffer."
   (interactive)
   (let ((it (read (buffer-string)))
 	(bufname (concat "*json-" (number-to-string (random 1000)) "*")))
