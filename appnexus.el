@@ -132,6 +132,14 @@ URL is a string."
     (print-buf bufname (json-encode it))
     (switch-to-buffer bufname)))
 
+(defun buf2lsp ()
+  "Convert the current buffer to Lisp, and open in a temp buffer."
+  (interactive)
+  (let ((it (read (buffer-string)))
+	(bufname (concat "*jlsp-" (number-to-string (random 1000)) "*")))
+    (print-buf bufname (json-read-from-string it))
+    (switch-to-buffer bufname)))
+
 (defun buf-do (verb service+params)
   "Send the HTTP request via VERB, with SERVICE+PARAMS."
   (interactive "sverb: \nsservice+params: ")
@@ -182,6 +190,7 @@ URL is a string."
 (global-set-key (kbd "C-x C-A S") 'an-switchto)
 (global-set-key (kbd "C-x C-A W") 'an-who)
 (global-set-key (kbd "C-x C-A J") 'buf2json)
+(global-set-key (kbd "C-x C-A L") 'buf2lsp)
 (global-set-key (kbd "C-x C-A P") 'buf-do)
 (global-set-key (kbd "C-x C-A G") 'an-get)
 (global-set-key (kbd "C-x C-A C") 'an-confluence-doc)
