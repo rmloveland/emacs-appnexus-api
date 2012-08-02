@@ -165,11 +165,20 @@ URL is a string."
   (interactive)
   (print-buf "*an-who*" (an-request "GET" nil *an-current-url* "user?current")))
 
+(defun an-confluence-doc ()
+  (interactive)
+  (browse-url-default-macosx-browser
+   (concat "https://confluence.atlassian.com/dosearchsite.action?&searchQuery.spaceKey=CONF35&searchQuery.queryString=ancestorIds%3A252347565+AND+"
+	   (symbol-name-before-point))))
+
 (global-set-key (kbd "C-x C-A A") 'an-auth)
 (global-set-key (kbd "C-x C-A S") 'an-switchto)
 (global-set-key (kbd "C-x C-A W") 'an-who)
 (global-set-key (kbd "C-x C-A J") 'buf2json)
-(global-set-key (kbd "C-x C-A D") 'buf-do)
+(global-set-key (kbd "C-x C-A P") 'buf-do)
 (global-set-key (kbd "C-x C-A G") 'an-get)
+(global-set-key (kbd "C-x C-A C") 'an-confluence-doc)
+;; (global-set-key (kbd "C-x C-A D") 'an-doc)
+;; not written yet -- will search appnexus documentation for the symbol at point
 
 (provide 'appnexus)
