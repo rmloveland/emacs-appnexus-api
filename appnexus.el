@@ -129,8 +129,9 @@ URL is a string."
   "Convert the current buffer to JSON, and open in a temp buffer."
   (interactive)
   (let ((it (read (buffer-string)))
-	(bufname (concat "*json-" (number-to-string (random 1000)) "*")))
-    (print-buf bufname (json-encode it))))
+	(bufname (concat "*json-" (number-to-string (random 1000)) "*"))
+	(mode 'js-mode))
+    (smart-print-buf bufname (json-encode it) mode)))
 
 (defun smart-buf2json ()
   "Convert the current buffer to JSON (without the escaped double quotes), and open in a temp buffer."
