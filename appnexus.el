@@ -56,7 +56,7 @@
 		(response (json-read-from-string (buffer-substring (point) (point-max)))))
 	    response)))))
 
-(defun an-request (verb payload url path)
+(defun an-request (verb payload path)
   "Send a request to the AppNexus API service at PATH using a RESTful VERB.
 The PAYLOAD will be a Lisp data structure that we convert into JSON. The
 URL is a string."
@@ -65,7 +65,7 @@ URL is a string."
 	(url-request-data (json-encode payload)))
      (an-response
       (url-retrieve-synchronously
-       (concat url "/" path)))))
+       (concat *an-current-url* "/" path)))))
 
 (defun alist-to-query-params (alist)
   "This function is not being used right now."
@@ -93,7 +93,6 @@ URL is a string."
 	     (an-request "POST"
 			 (or payload
 			     `(:auth (:username ,an-username :password ,an-password)))
-			 *an-current-url*
 			 "auth")))
 
 (defun print-buf (bufname thing)
@@ -188,7 +187,6 @@ URL is a string."
     (print-buf (concat "*" service+params "*")
 	       (an-request verb
 			   payload
-			   *an-current-url*
 			   service+params))))
 
 (defun an-get (service+params)
@@ -197,7 +195,6 @@ URL is a string."
   (print-buf (concat "*" service+params "*")
 	     (an-request "GET"
 			 ""
-			 *an-current-url*
 			 service+params)))
 
 (defun an-switchto (user-id)
@@ -206,13 +203,12 @@ URL is a string."
   (print-buf "*an-switchto*"
 	     (an-request "POST"
 			 `(:auth (:switch_to_user ,user-id))
-			 *an-current-url*
 			 "auth")))
 
 (defun an-who ()
   "Find out what user you are; open in new buffer."
   (interactive)
-  (print-buf "*an-who*" (an-request "GET" nil *an-current-url* "user?current")))
+  (print-buf "*an-who*" (an-request "GET" nil "user?current")))
 
 (defun an-confluence-doc ()
   "Browse confluence 3.5 docs for symbol at point."
