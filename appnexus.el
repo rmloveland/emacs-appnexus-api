@@ -135,10 +135,32 @@ URL is a string."
   "Convert the current buffer to JSON (without the escaped double quotes), and open in a temp buffer."
   (interactive)
   (let* ((it (read (buffer-string)))
-	(content (json-encode it))
+	(content (strip-json-backslashed-quotes (json-encode it)))
 	(bufname (concat "*json-" (number-to-string (random 1000)) "*"))
 	(mode 'js-mode))
     (smart-print-buf bufname content mode)))
+
+(defun dirty-json ()
+  "puts the backslashed quotes back in, for re-conversion to lisp"
+  (insert-json-backslashed-quotes))
+
+(defun clean-json ()
+  "strip json.el-generated json string of its backslashed double quotes for other json parsers to use"
+  (interactive)
+  (goto-char (point-min))
+  (re-search-forward "\"" nil t)
+  (replace-match "" nil t)
+  (goto-char (point-max))
+  (re-search-backward "\"" nil t)
+  (replace-match "" nil t)
+  (goto-char (point-min))
+  ;; remember the case where there's double-backslashed embedded json!
+  (while (re-search-forward "\\\\\"" nil t)
+    ;; replace two backslashes followed by quote with one backslash followed by quote
+    (replace-match "\"" nil t))
+  ;; now the replace the single backslashes with nothing
+  (while (re-search-forward "\\\\" nil t)
+    (replace-match "" nil t)))
 
 (defun buf2lsp ()
   "Convert the current buffer to Lisp, and open in a temp buffer."
@@ -203,5 +225,6 @@ URL is a string."
 (global-set-key (kbd "C-x C-A G") 'an-get)
 (global-set-key (kbd "C-x C-A C") 'an-confluence-doc)
 (global-set-key (kbd "C-x C-A D") 'an-api-doc)
+(global-set-key (kbd "C-x C-A E") 'clean-json)
 
 (provide 'appnexus)
