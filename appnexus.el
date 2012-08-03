@@ -117,11 +117,12 @@ URL is a string."
 	;; change window in case its unsuitable (dedicated or special display)
 	(select-window (get-window-for-other-buffer))
 	;; force new frame
-	(switch-to-buffer buf)
-	(select-frame-set-input-focus (window-frame (selected-window)))))
+	(switch-to-buffer buf)))
+	;;(select-frame-set-input-focus (window-frame (selected-window)))))
     (setq buffer-offer-save t)
     (put 'buffer-offer-save 'permanent-local t)
     (set-buffer-modified-p nil)
+    (goto-char (point-min))
     (print thing buf)))
 
 (defun buf2json ()
@@ -142,7 +143,14 @@ URL is a string."
 
 (defun dirty-json ()
   "puts the backslashed quotes back in, for re-conversion to lisp"
-  (insert-json-backslashed-quotes))
+  (interactive)
+  (goto-char (point-min))
+  (insert "\"")
+  (goto-char (point-max))
+  (insert "\"")
+  (goto-char (+ 1 (point-min)))
+  (while (re-search-forward "\"" (- (point-max) 1) t)
+    (replace-match "\\\"" nil t)))
 
 (defun clean-json ()
   "strip json.el-generated json string of its backslashed double quotes for other json parsers to use"
@@ -166,8 +174,10 @@ URL is a string."
   "Convert the current buffer to Lisp, and open in a temp buffer."
   (interactive)
   (let ((it (read (buffer-string)))
-	(bufname (concat "*jlsp-" (number-to-string (random 1000)) "*")))
-    (print-buf bufname (json-read-from-string it))
+	(bufname (concat "*jlsp-" (number-to-string (random 1000)) "*"))
+	(mode 'lisp-interaction-mode))
+    (smart-print-buf bufname (json-read-from-string it) mode)
+    ;; think about using `elisp-format-buffer'
     (switch-to-buffer bufname)))
 
 (defun buf-do (verb service+params)
@@ -226,5 +236,6 @@ URL is a string."
 (global-set-key (kbd "C-x C-A C") 'an-confluence-doc)
 (global-set-key (kbd "C-x C-A D") 'an-api-doc)
 (global-set-key (kbd "C-x C-A E") 'clean-json)
+(global-set-key (kbd "C-x C-A I") 'dirty-json)
 
 (provide 'appnexus)
