@@ -28,9 +28,9 @@
     (:username ,an-username
 	       :password ,an-password)))
 
-(defvar *an-current-url* *an-sandbox-url*)
 (defvar *an-production-url* "http://api.appnexus.com")
 (defvar *an-sandbox-url* "http://api.sand-08.adnxs.net")
+(defvar *an-current-url* *an-sandbox-url*)
 
 (defvar *an-debug* nil)
 
@@ -60,14 +60,19 @@
   "Send a request to the AppNexus API service at PATH using a RESTful VERB.
 The PAYLOAD will be a Lisp data structure that we convert into JSON. The
 URL is a string."
-  (let ((url-request-method verb)
-	(url-request-extra-headers '(("Content-Type" . "application/x-www-form-urlencoded")))
-	(url-request-data
-	 (if payload
-	     (json-encode payload))))
-    (an-response
-     (url-retrieve-synchronously
-      (concat *an-current-url* "/" path)))))
+  (if payload
+      (let ((url-request-method verb)
+	    (url-request-extra-headers '(("Content-Type" . "application/x-www-form-urlencoded")))
+	    (url-request-data
+	     (json-encode payload)))
+	(an-response
+	 (url-retrieve-synchronously
+	  (concat *an-current-url* "/" path))))
+    (let ((url-request-method verb)
+	  (url-request-extra-headers '(("Content-Type" . "application/x-www-form-urlencoded"))))
+      (an-response
+       (url-retrieve-synchronously
+	(concat *an-current-url* "/" path))))))
 
 (defun alist-to-query-params (alist)
   "This function is not being used right now."
@@ -133,15 +138,6 @@ URL is a string."
 	(bufname (concat "*json-" (number-to-string (random 1000)) "*"))
 	(mode 'js-mode))
     (smart-print-buf bufname (json-encode it) mode)))
-
-(defun smart-buf2json ()
-  "Convert the current buffer to JSON (without the escaped double quotes), and open in a temp buffer."
-  (interactive)
-  (let* ((it (read (buffer-string)))
-	(content (strip-json-backslashed-quotes (json-encode it)))
-	(bufname (concat "*json-" (number-to-string (random 1000)) "*"))
-	(mode 'js-mode))
-    (smart-print-buf bufname content mode)))
 
 (defun dirty-json ()
   "puts the backslashed quotes back in, for re-conversion to lisp"
