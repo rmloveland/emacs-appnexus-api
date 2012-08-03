@@ -56,16 +56,18 @@
 		(response (json-read-from-string (buffer-substring (point) (point-max)))))
 	    response)))))
 
-(defun an-request (verb payload path)
+(defun an-request (verb path &optional payload)
   "Send a request to the AppNexus API service at PATH using a RESTful VERB.
 The PAYLOAD will be a Lisp data structure that we convert into JSON. The
 URL is a string."
   (let ((url-request-method verb)
 	(url-request-extra-headers '(("Content-Type" . "application/x-www-form-urlencoded")))
-	(url-request-data (json-encode payload)))
-     (an-response
-      (url-retrieve-synchronously
-       (concat *an-current-url* "/" path)))))
+	(url-request-data
+	 (if payload
+	     (json-encode payload))))
+    (an-response
+     (url-retrieve-synchronously
+      (concat *an-current-url* "/" path)))))
 
 (defun alist-to-query-params (alist)
   "This function is not being used right now."
@@ -91,9 +93,9 @@ URL is a string."
   (interactive)
   (print-buf "*an-auth*"
 	     (an-request "POST"
+			 "auth"
 			 (or payload
-			     `(:auth (:username ,an-username :password ,an-password)))
-			 "auth")))
+			     `(:auth (:username ,an-username :password ,an-password))))))
 
 (defun print-buf (bufname thing)
   "Print THING to a temporary buffer BUFNAME."
@@ -186,15 +188,14 @@ URL is a string."
   (let ((payload (read (buffer-string))))
     (print-buf (concat "*" service+params "*")
 	       (an-request verb
-			   payload
-			   service+params))))
+			   service+params
+			   	   payload))))
 
 (defun an-get (service+params)
   "Send a GET request to the specified SERVICE+PARAMS."
   (interactive "sservice+params: ")
   (print-buf (concat "*" service+params "*")
 	     (an-request "GET"
-			 ""
 			 service+params)))
 
 (defun an-switchto (user-id)
@@ -202,13 +203,13 @@ URL is a string."
   (interactive "suser-id: ")
   (print-buf "*an-switchto*"
 	     (an-request "POST"
-			 `(:auth (:switch_to_user ,user-id))
-			 "auth")))
+			 "auth"
+			 `(:auth (:switch_to_user ,user-id)))))
 
 (defun an-who ()
   "Find out what user you are; open in new buffer."
   (interactive)
-  (print-buf "*an-who*" (an-request "GET" nil "user?current")))
+  (print-buf "*an-who*" (an-request "GET" "user?current")))
 
 (defun an-confluence-doc ()
   "Browse confluence 3.5 docs for symbol at point."
