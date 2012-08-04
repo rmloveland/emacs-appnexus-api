@@ -142,32 +142,38 @@ URL is a string."
 (defun dirty-json ()
   "puts the backslashed quotes back in, for re-conversion to lisp"
   (interactive)
-  (goto-char (point-min))
-  (insert "\"")
-  (goto-char (point-max))
-  (insert "\"")
-  (goto-char (+ 1 (point-min)))
-  (while (re-search-forward "\"" (- (point-max) 1) t)
-    (replace-match "\\\"" nil t)))
+  (save-excursion
+    (goto-char (point-min))
+    (insert "\"")
+    (goto-char (point-max))
+    (insert "\"")
+    (goto-char (+ 1 (point-min)))
+    ;; replace backslash quote with double backslash quote
+    (while (re-search-forward "\\\\\"" (- (point-max) 1) t)
+      (replace-match "\\\\\"" nil t))
+    (goto-char (+ 1 (point-min)))
+    ;; replace quote with backslash quote
+    (while (re-search-forward "\"" (- (point-max) 1) t)
+      (replace-match "\\\"" nil t))))
 
 (defun clean-json ()
   "strip json.el-generated json string of its backslashed double quotes for other json parsers to use"
   (interactive)
-  (goto-char (point-min))
-  (re-search-forward "\"" nil t)
-  (replace-match "" nil t)
-  (goto-char (point-max))
-  (re-search-backward "\"" nil t)
-  (replace-match "" nil t)
-  (goto-char (point-min))
-  ;; first, replace the single backslashed quote with quote
-  (while (re-search-forward "\\\\\"" nil t)
-    (replace-match "\"" nil t))
-  ;; then, on second pass, replace double backslashes with a single backslash
-  (goto-char (point-min))
-  (while (re-search-forward "\\\\\\\\" nil t)
-    (replace-match "\\" nil t)))
-
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward "\"" nil t)
+    (replace-match "" nil t)
+    (goto-char (point-max))
+    (re-search-backward "\"" nil t)
+    (replace-match "" nil t)
+    (goto-char (point-min))
+    ;; first, replace the single backslashed quote with quote
+    (while (re-search-forward "\\\\\"" nil t)
+      (replace-match "\"" nil t))
+    ;; then, on second pass, replace double backslashes with a single backslash
+    (goto-char (point-min))
+    (while (re-search-forward "\\\\\\\\" nil t)
+      (replace-match "\\" nil t))))
 
 (defun buf2lsp ()
   "Convert the current buffer to Lisp, and open in a temp buffer."
