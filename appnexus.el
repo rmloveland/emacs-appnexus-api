@@ -220,22 +220,42 @@ URL is a string."
   (browse-url-default-macosx-browser
    (concat "https://wiki.appnexus.com/dosearchsite.action?searchQuery.spaceKey=api&searchQuery.queryString=ancestorIds%3A27984339+AND+" (symbol-name-before-point))))
 
-(defun an-auth-credentials (username password)
-  (interactive "susername: \nspassword: ")
-  (progn
-    (setq an-username username)
-    (setq an-password password)))
+(defun an-auth-credentials (username)
+  (interactive "susername: ")
+  (setq an-username username)
+  (setq an-password (read-passwd "password: ")))
+
+;; (defun an-generate-curl-string (service+params &optional verb payload-file)
+;;   (interactive))
+
+(defun an-print-current-url ()
+  (interactive)
+  (message "current api url is %s" *an-current-url*))
+
+(defun an-toggle-sand-or-prod-url ()
+  "toggle sand or prod url; todo: authenticate, too?"
+  (interactive)
+  (if (string-equal *an-current-url* *an-sandbox-url*)
+      (setq *an-current-url* *an-production-url*)
+    (setq *an-current-url* *an-sandbox-url*)))
 
 (global-set-key (kbd "C-x C-A A") 'an-auth)
 (global-set-key (kbd "C-x C-A a") 'an-auth-credentials)
 (global-set-key (kbd "C-x C-A S") 'an-switchto)
+
 (global-set-key (kbd "C-x C-A W") 'an-who)
+(global-set-key (kbd "C-x C-A w") 'an-print-current-url)
+(global-set-key (kbd "C-x C-A T") 'an-toggle-sand-or-prod-url)
+
 (global-set-key (kbd "C-x C-A J") 'buf2json)
 (global-set-key (kbd "C-x C-A L") 'buf2lsp)
+
 (global-set-key (kbd "C-x C-A P") 'buf-do)
 (global-set-key (kbd "C-x C-A G") 'an-get)
+
 (global-set-key (kbd "C-x C-A C") 'an-confluence-doc)
 (global-set-key (kbd "C-x C-A D") 'an-api-doc)
+
 (global-set-key (kbd "C-x C-A E") 'clean-json)
 (global-set-key (kbd "C-x C-A I") 'dirty-json)
 
