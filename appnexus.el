@@ -220,7 +220,14 @@ URL is a string."
   (browse-url-default-macosx-browser
    (concat "https://wiki.appnexus.com/dosearchsite.action?searchQuery.spaceKey=api&searchQuery.queryString=ancestorIds%3A27984339+AND+" (symbol-name-before-point))))
 
+(defun an-auth-credentials (username password)
+  (interactive "susername: \nspassword: ")
+  (progn
+    (setq an-username username)
+    (setq an-password password)))
+
 (global-set-key (kbd "C-x C-A A") 'an-auth)
+(global-set-key (kbd "C-x C-A a") 'an-auth-credentials)
 (global-set-key (kbd "C-x C-A S") 'an-switchto)
 (global-set-key (kbd "C-x C-A W") 'an-who)
 (global-set-key (kbd "C-x C-A J") 'buf2json)
