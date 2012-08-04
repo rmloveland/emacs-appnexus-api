@@ -160,13 +160,14 @@ URL is a string."
   (re-search-backward "\"" nil t)
   (replace-match "" nil t)
   (goto-char (point-min))
-  ;; remember the case where there's double-backslashed embedded json!
+  ;; first, replace the single backslashed quote with quote
   (while (re-search-forward "\\\\\"" nil t)
-    ;; replace two backslashes followed by quote with one backslash followed by quote
     (replace-match "\"" nil t))
-  ;; now the replace the single backslashes with nothing
-  (while (re-search-forward "\\\\" nil t)
-    (replace-match "" nil t)))
+  ;; then, on second pass, replace double backslashes with a single backslash
+  (goto-char (point-min))
+  (while (re-search-forward "\\\\\\\\" nil t)
+    (replace-match "\\" nil t)))
+
 
 (defun buf2lsp ()
   "Convert the current buffer to Lisp, and open in a temp buffer."
