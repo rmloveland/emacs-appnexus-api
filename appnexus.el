@@ -114,22 +114,21 @@ URL is a string."
 	(other-frame t))
     ;; setting mode is done before showing the new frame
     ;; because otherwise, we get a nasty animation effect
-    (save-excursion
-      (set-buffer buf)
-      (funcall mode))
-    (if other-frame
-	(switch-to-buffer-other-window buf)
-      (let ((one-buffer-one-frame-force one-buffer-one-frame-mode))
-	;; change window in case its unsuitable (dedicated or special display)
-	(select-window (get-window-for-other-buffer))
-	;; force new frame
-	(switch-to-buffer buf)))
-	;;(select-frame-set-input-focus (window-frame (selected-window)))))
-    (setq buffer-offer-save t)
-    (put 'buffer-offer-save 'permanent-local t)
-    (set-buffer-modified-p nil)
-    (goto-char (point-min))
-    (print thing buf)))
+    (set-buffer buf)
+    (funcall mode))
+  (if other-frame
+      (switch-to-buffer-other-window buf)
+    (let ((one-buffer-one-frame-force one-buffer-one-frame-mode))
+      ;; change window in case its unsuitable (dedicated or special display)
+      (select-window (get-window-for-other-buffer))
+      ;; force new frame
+      (switch-to-buffer buf)))
+  ;;(select-frame-set-input-focus (window-frame (selected-window)))))
+  (setq buffer-offer-save t)
+  (put 'buffer-offer-save 'permanent-local t)
+  (set-buffer-modified-p nil)
+  (goto-char (point-min))
+  (print thing buf))
 
 (defun buf2json ()
   "Convert the current buffer to JSON, and open in a temp buffer."
