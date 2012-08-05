@@ -32,11 +32,13 @@
 (defvar *an-sandbox-url* "http://api.sand-08.adnxs.net")
 (defvar *an-current-url* *an-sandbox-url*)
 
-(defvar *an-debug* nil)
+(defvar *an-debug* nil) ;; no-op right now, maybe just learn to use the debugger?
 
+;; TODO: learn what the heck `put' does
 (put 'an-api-error 'error-message "AppNexus API error")
 (put 'an-api-error 'error-conditions '(appnexus-api-error error))
 
+;; TODO: think about whether you'd like to use this code
 (defun an-check-error (response)
   "Check to see if RESPONSE is an API error. If so, signal the error."
   (let ((status (gethash "status" response)))
