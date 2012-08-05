@@ -115,7 +115,7 @@ URL is a string."
     ;; setting mode is done before showing the new frame
     ;; because otherwise, we get a nasty animation effect
     (set-buffer buf)
-    (funcall mode))
+    (funcall mode)
   (if other-frame
       (switch-to-buffer-other-window buf)
     (let ((one-buffer-one-frame-force one-buffer-one-frame-mode))
@@ -128,7 +128,7 @@ URL is a string."
   (put 'buffer-offer-save 'permanent-local t)
   (set-buffer-modified-p nil)
   (goto-char (point-min))
-  (print thing buf))
+  (print thing buf)))
 
 (defun buf2json ()
   "Convert the current buffer to JSON, and open in a temp buffer."
