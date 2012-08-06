@@ -191,10 +191,11 @@ URL is a string."
   "Send the HTTP request via VERB, with SERVICE+PARAMS."
   (interactive "sverb: \nsservice+params: ")
   (let ((payload (read (buffer-string))))
-    (print-buf (concat "*" service+params "*")
+    (smart-print-buf (concat "*" service+params "*")
 	       (an-request verb
 			   service+params
-			   	   payload))))
+			   	   payload)
+	       'lisp-interaction-mode)))
 
 (defun an-get (service+params)
   "Send a GET request to the specified SERVICE+PARAMS."
@@ -207,15 +208,17 @@ URL is a string."
 (defun an-switchto (user-id)
   "Switch to another AppNexus API user. Only works if you're an admin."
   (interactive "suser-id: ")
-  (print-buf "*an-switchto*"
+  (smart-print-buf "*an-switchto*"
 	     (an-request "POST"
 			 "auth"
-			 `(:auth (:switch_to_user ,user-id)))))
+			 `(:auth (:switch_to_user ,user-id)))
+	     'lisp-interaction-mode))
 
 (defun an-who ()
   "Find out what user you are; open in new buffer."
   (interactive)
-  (print-buf "*an-who*" (an-request "GET" "user?current")))
+  (smart-print-buf "*an-who*" (an-request "GET" "user?current")
+		   'lisp-interaction-mode))
 
 (defun an-confluence-doc ()
   "Browse confluence 3.5 docs for symbol at point."
