@@ -98,11 +98,12 @@ URL is a string."
 (defun an-auth (&optional payload)
   "Authenticate with the API, and open the response in a temporary buffer."
   (interactive)
-  (print-buf "*an-auth*"
+  (smart-print-buf "*an-auth*"
 	     (an-request "POST"
 			 "auth"
 			 (or payload
-			     `(:auth (:username ,an-username :password ,an-password))))))
+			     `(:auth (:username ,an-username :password ,an-password))))
+	     'lisp-interaction-mode))
 
 (defun print-buf (bufname thing)
   "Print THING to a temporary buffer BUFNAME."
