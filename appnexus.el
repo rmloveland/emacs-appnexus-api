@@ -199,9 +199,10 @@ URL is a string."
 (defun an-get (service+params)
   "Send a GET request to the specified SERVICE+PARAMS."
   (interactive "sservice+params: ")
-  (print-buf (concat "*" service+params "*")
+  (smart-print-buf (concat "*" service+params "*")
 	     (an-request "GET"
-			 service+params)))
+			 service+params)
+	     'lisp-interaction-mode))
 
 (defun an-switchto (user-id)
   "Switch to another AppNexus API user. Only works if you're an admin."
