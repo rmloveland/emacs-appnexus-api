@@ -223,7 +223,8 @@ URL is a string."
 (defun an-confluence-doc ()
   "Browse confluence 3.5 docs for symbol at point."
   (interactive)
-  (browse-url-default-macosx-browser
+  (let ((browse-url-generic-program "open"))
+  (browse-url-generic
    (concat "https://confluence.atlassian.com/dosearchsite.action?&searchQuery.spaceKey=CONF35&searchQuery.queryString=ancestorIds%3A252347565+AND+"
 	   (symbol-name-before-point))))
 
