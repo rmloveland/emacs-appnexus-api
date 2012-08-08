@@ -226,13 +226,14 @@ URL is a string."
   (let ((browse-url-generic-program "open"))
   (browse-url-generic
    (concat "https://confluence.atlassian.com/dosearchsite.action?&searchQuery.spaceKey=CONF35&searchQuery.queryString=ancestorIds%3A252347565+AND+"
-	   (symbol-name-before-point))))
+	   (symbol-name-before-point)))))
 
 (defun an-api-doc ()
   "search appnexus api docs for symbol at point"
   (interactive)
-  (browse-url-default-macosx-browser
-   (concat "https://wiki.appnexus.com/dosearchsite.action?searchQuery.spaceKey=api&searchQuery.queryString=ancestorIds%3A27984339+AND+" (symbol-name-before-point))))
+  (let ((browse-url-generic-program "open"))
+    (browse-url-generic
+     (concat "https://wiki.appnexus.com/dosearchsite.action?searchQuery.spaceKey=api&searchQuery.queryString=ancestorIds%3A27984339+AND+" (symbol-name-before-point)))))
 
 (defun an-auth-credentials (username)
   (interactive "susername: ")
