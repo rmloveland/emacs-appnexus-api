@@ -34,6 +34,9 @@
 
 (defvar *an-debug* nil) ;; no-op right now, maybe just learn to use the debugger?
 
+;; TODO: setting this here is hacky; plus these regexen look kinda wrong
+(setq url-cookie-trusted-urls '(".*adnxs\.net" ".*appnexus\.com"))
+
 ;; TODO: learn what the heck `put' does
 (put 'an-api-error 'error-message "AppNexus API error")
 (put 'an-api-error 'error-conditions '(appnexus-api-error error))
