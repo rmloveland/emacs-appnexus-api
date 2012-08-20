@@ -3,7 +3,7 @@
 (require 'url)
 
 (defgroup appnexus nil
-  "An Emacs interface to the AppNexus Console API."
+  "Functions that allow for easy interaction with AppNexus' Console API."
   :group 'processes
   :prefix "an-"
   :link '(url-link :tag "AppNexus API entry point."
@@ -14,12 +14,12 @@
 		   "https://wiki.appnexus.com/display/api/Home"))
 
 (defcustom an-username nil
-  "Your AppNexus username."
+  "Your AppNexus API username."
   :group 'appnexus
   :type '(string))
 
 (defcustom an-password nil
-  "Your AppNexus password."
+  "Your AppNexus API password."
   :group 'appnexus
   :type '(string))
 
@@ -32,14 +32,14 @@
 (defvar *an-sandbox-url* "http://api.sand-08.adnxs.net")
 (defvar *an-current-url* *an-sandbox-url*)
 
-;; TODO: setting this here is hacky; plus these regexen look kinda wrong
+;; FIXME: Applying `url.el' settings here is hacky
 (setq url-cookie-trusted-urls '(".*adnxs\.net" ".*appnexus\.com"))
 
-;; TODO: learn what the heck `put' does
+;; FIXME: learn what the heck `put' does
 (put 'an-api-error 'error-message "AppNexus API error")
 (put 'an-api-error 'error-conditions '(appnexus-api-error error))
 
-;; TODO: think about whether you'd like to use this code
+;; FIXME: think about whether you'd like to use this code
 (defun an-check-error (response)
   "Check to see if RESPONSE is an API error. If so, signal the error."
   (let ((status (gethash "status" response)))
@@ -50,7 +50,8 @@
 	(signal 'an-api-error (list id type description))))))
 
 (defun an-response (buffer)
-  "Convert the JSON response in BUFFER into a hash table."
+  "Convert the JSON response left by `an-request' in BUFFER into a hash table.
+Then, return that hash table."
   (unwind-protect
       (with-current-buffer buffer
 	(save-excursion
@@ -60,9 +61,9 @@
 	    response)))))
 
 (defun an-request (verb path &optional payload)
-  "Send a request to the AppNexus API service at PATH using a RESTful VERB.
-The PAYLOAD will be a Lisp data structure that we convert into JSON. The
-URL is a string."
+  "Send an HTTP request, VERB, to the service at PATH with PAYLOAD in tow.
+If it exists, PAYLOAD will be a Lisp data structure that we convert into
+JSON on the fly before making the request."
   (if payload
       (let ((url-request-method verb)
 	    (url-request-extra-headers '(("Content-Type" . "application/x-www-form-urlencoded")))
@@ -78,15 +79,19 @@ URL is a string."
 	(concat *an-current-url* "/" path))))))
 
 (defun alist-to-query-params (alist)
-  "This function is not being used right now."
+  "Convert an alist of URL query parameters into a query string.
+This function is not currently being used anywhere, and may be
+removed."
   (mapconcat (lambda (x) x)
 	     (mapcar (lambda (x) (concat (symbol-name (car x)) "="
 					 (symbol-name (cadr x))))
 		     alist) "&"))
 
 (defun an-json-fields (filename)
-  "This function is not finished."
-  ;; In progress...
+  "Gather a list of JSON fields available through the API `meta' service.
+This function is unfinished. Currently takes a filename argument, but should
+accept a URL in future."
+  ;; FIXME: Finish writing this function
   (let* ((possible-values '(meta fields))
 	(response (let ((json-object-type 'alist))
 		    (assoc 'response (json-read-file filename))))
@@ -97,7 +102,7 @@ URL is a string."
     fields))
 
 (defun an-auth (&optional payload)
-  "Authenticate with the API, and open the response in a temporary buffer."
+  "Authenticate with the API and open the response in a temporary buffer."
   (interactive)
   (smart-print-buf "*an-auth*"
 	     (an-request "POST"
@@ -107,12 +112,13 @@ URL is a string."
 	     'lisp-interaction-mode))
 
 (defun print-buf (bufname thing)
-  "Print THING to a temporary buffer BUFNAME."
+  "Print THING to a temporary buffer named BUFNAME.
+This function is obsoleted by `smart-print-buf', and will be removed."
   (with-output-to-temp-buffer bufname
     (print thing)))
 
 (defun smart-print-buf (bufname thing mode)
-  "Not finished yet. I need to finish it so I can have results buffers that retain undo information."
+  "Pop open a buffer BUFNAME containing THING in your Emacs MODE of choice."
   (interactive)
   (let ((buf (generate-new-buffer bufname))
 	(other-frame t))
@@ -135,7 +141,8 @@ URL is a string."
   (print thing buf)))
 
 (defun buf2json ()
-  "Convert the current buffer to JSON, and open in a temp buffer."
+  "Convert the current buffer from Elisp to the heavily escaped JSON string
+format preferred by `json.el'. Open the results in a new buffer."
   (interactive)
   (let ((it (read (buffer-string)))
 	(bufname (concat "*json-" (number-to-string (random 1000)) "*"))
@@ -143,7 +150,9 @@ URL is a string."
     (smart-print-buf bufname (json-encode it) mode)))
 
 (defun dirty-json ()
-  "puts the backslashed quotes back in, for re-conversion to lisp"
+  "Convert a buffer of standard JSON to the escaped JSON string format
+preferred by `json.el', and pop open a new buffer with the contents. This
+is an intermediate step for re-conversion to Elisp."
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -160,7 +169,8 @@ URL is a string."
       (replace-match "\\\"" nil t))))
 
 (defun clean-json ()
-  "strip json.el-generated json string of its backslashed double quotes for other json parsers to use"
+  "Convert a buffer of the escaped JSON strings preferred by `json.el' into
+standard  JSON, and pop open a new buffer with the contents."
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -179,7 +189,8 @@ URL is a string."
       (replace-match "\\" nil t))))
 
 (defun buf2lsp ()
-  "Convert the current buffer to Lisp, and open in a temp buffer."
+  "Convert the `json.el' escaped JSON string in the current buffer to Elisp,
+and open the results in a new temp buffer."
   (interactive)
   (let ((it (read (buffer-string)))
 	(bufname (concat "*jlsp-" (number-to-string (random 1000)) "*"))
@@ -189,7 +200,7 @@ URL is a string."
     (switch-to-buffer bufname)))
 
 (defun buf-do (verb service+params)
-  "Send the HTTP request via VERB, with SERVICE+PARAMS."
+  "Send a request, VERB, to SERVICE+PARAMS."
   (interactive "sverb: \nsservice+params: ")
   (let ((payload (read (buffer-string))))
     (smart-print-buf (concat "*" service+params "*")
@@ -199,7 +210,7 @@ URL is a string."
 	       'lisp-interaction-mode)))
 
 (defun an-get (service+params)
-  "Send a GET request to the specified SERVICE+PARAMS."
+  "Send a standard GET request to SERVICE+PARAMS."
   (interactive "sservice+params: ")
   (smart-print-buf (concat "*" service+params "*")
 	     (an-request "GET"
@@ -207,7 +218,8 @@ URL is a string."
 	     'lisp-interaction-mode))
 
 (defun an-switchto (user-id)
-  "Switch to another AppNexus API user. Only works if you're an admin."
+  "Switch to another API user. This function will only work if you're an
+admin user."
   (interactive "suser-id: ")
   (smart-print-buf "*an-switchto*"
 	     (an-request "POST"
