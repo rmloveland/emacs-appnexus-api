@@ -32,8 +32,6 @@
 (defvar *an-sandbox-url* "http://api.sand-08.adnxs.net")
 (defvar *an-current-url* *an-sandbox-url*)
 
-(defvar *an-debug* nil) ;; no-op right now, maybe just learn to use the debugger?
-
 ;; TODO: setting this here is hacky; plus these regexen look kinda wrong
 (setq url-cookie-trusted-urls '(".*adnxs\.net" ".*appnexus\.com"))
 
