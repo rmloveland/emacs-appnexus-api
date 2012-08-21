@@ -166,7 +166,11 @@ is an intermediate step for re-conversion to Elisp."
     (goto-char (+ 1 (point-min)))
     ;; replace quote with backslash quote
     (while (re-search-forward "\"" (- (point-max) 1) t)
-      (replace-match "\\\"" nil t))))
+      (replace-match "\\\"" nil t))
+    (goto-char (+ 1 (point-min)))
+    ;; replace backslash quote with double backslash quote
+    (while (re-search-forward "\n +" (- (point-max) 1) t)
+      (replace-match "" nil t))))
 
 (defun clean-json ()
   "Convert a buffer of the escaped JSON strings preferred by `json.el' into
