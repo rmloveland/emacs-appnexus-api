@@ -168,7 +168,8 @@ is an intermediate step for re-conversion to Elisp."
     (while (re-search-forward "\"" (- (point-max) 1) t)
       (replace-match "\\\"" nil t))
     (goto-char (+ 1 (point-min)))
-    ;; replace backslash quote with double backslash quote
+    ;; remove newlines and space characters, since our json parser
+    ;; can't understand them and throws an error
     (while (re-search-forward "\n +" (- (point-max) 1) t)
       (replace-match "" nil t))))
 
