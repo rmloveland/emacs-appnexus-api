@@ -109,7 +109,7 @@ accept a URL in future."
 			 "auth"
 			 (or payload
 			     `(:auth (:username ,an-username :password ,an-password))))
-	     'lisp-interaction-mode))
+	     'emacs-lisp-mode))
 
 (defun print-buf (bufname thing)
   "Print THING to a temporary buffer named BUFNAME.
@@ -199,7 +199,7 @@ and open the results in a new temp buffer."
   (interactive)
   (let ((it (read (buffer-string)))
 	(bufname (concat "*jlsp-" (number-to-string (random 1000)) "*"))
-	(mode 'lisp-interaction-mode))
+	(mode 'emacs-lisp-mode))
     (smart-print-buf bufname (json-read-from-string it) mode)
     ;; think about using `elisp-format-buffer'
     (switch-to-buffer bufname)))
@@ -212,7 +212,7 @@ and open the results in a new temp buffer."
 	       (an-request verb
 			   service+params
 			   	   payload)
-	       'lisp-interaction-mode)))
+	       'emacs-lisp-mode)))
 
 (defun an-get (service+params)
   "Send a standard GET request to SERVICE+PARAMS."
@@ -220,7 +220,7 @@ and open the results in a new temp buffer."
   (smart-print-buf (concat "*" service+params "*")
 	     (an-request "GET"
 			 service+params)
-	     'lisp-interaction-mode))
+	     'emacs-lisp-mode))
 
 (defun an-switchto (user-id)
   "Switch to another API user. This function will only work if you're an
@@ -230,13 +230,13 @@ admin user."
 	     (an-request "POST"
 			 "auth"
 			 `(:auth (:switch_to_user ,user-id)))
-	     'lisp-interaction-mode))
+	     'emacs-lisp-mode))
 
 (defun an-who ()
   "Find out what user you are; open in new buffer."
   (interactive)
   (smart-print-buf "*an-who*" (an-request "GET" "user?current")
-		   'lisp-interaction-mode))
+		   'emacs-lisp-mode))
 
 (defun an-confluence-doc ()
   "Browse confluence 3.5 docs for symbol at point."
