@@ -235,7 +235,7 @@ admin user."
 (defun an-who ()
   "Find out what user you are; open in new buffer."
   (interactive)
-  (smart-print-buf "*an-who*" (an-request "GET" "user?current")
+  (smart-print-buf "*an-who*" (an-get "user?current")
 		   'emacs-lisp-mode))
 
 (defun an-confluence-doc ()
