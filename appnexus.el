@@ -3,7 +3,7 @@
 (require 'url)
 
 (defgroup appnexus nil
-  "Functions that allow for easy interaction with AppNexus' Console API."
+  "Functions that allow for easy interaction with AppNexus APIs."
   :group 'processes
   :prefix "an-"
   :link '(url-link :tag "AppNexus API entry point."
@@ -14,12 +14,12 @@
 		   "https://wiki.appnexus.com/display/api/Home"))
 
 (defcustom an-username nil
-  "Your AppNexus API username."
+  "AppNexus API username."
   :group 'appnexus
   :type '(string))
 
 (defcustom an-password nil
-  "Your AppNexus API password."
+  "AppNexus API password."
   :group 'appnexus
   :type '(string))
 
@@ -34,20 +34,6 @@
 
 ;; FIXME: Applying `url.el' settings here is hacky
 (setq url-cookie-trusted-urls '(".*adnxs\.net" ".*appnexus\.com"))
-
-;; FIXME: learn what the heck `put' does
-(put 'an-api-error 'error-message "AppNexus API error")
-(put 'an-api-error 'error-conditions '(appnexus-api-error error))
-
-;; FIXME: think about whether you'd like to use this code
-(defun an-check-error (response)
-  "Check to see if RESPONSE is an API error. If so, signal the error."
-  (let ((status (gethash "status" response)))
-    (unless (string-equal "OK" (gethash "response" status))
-      (let ((id (gethash "error_id" status))
-	    (type (gethash "error" status))
-	    (description (gethash "error_description" status)))
-	(signal 'an-api-error (list id type description))))))
 
 (defun an-response (buffer)
   "Convert the JSON response left by `an-request' in BUFFER into a hash table.
@@ -78,20 +64,11 @@ JSON on the fly before making the request."
        (url-retrieve-synchronously
 	(concat *an-current-url* "/" path))))))
 
-(defun alist-to-query-params (alist)
-  "Convert an alist of URL query parameters into a query string.
-This function is not currently being used anywhere, and may be
-removed."
-  (mapconcat (lambda (x) x)
-	     (mapcar (lambda (x) (concat (symbol-name (car x)) "="
-					 (symbol-name (cadr x))))
-		     alist) "&"))
-
+;; FIXME: Finish writing this function
 (defun an-json-fields (filename)
   "Gather a list of JSON fields available through the API `meta' service.
 This function is unfinished. Currently takes a filename argument, but should
 accept a URL in future."
-  ;; FIXME: Finish writing this function
   (let* ((possible-values '(meta fields))
 	(response (let ((json-object-type 'alist))
 		    (assoc 'response (json-read-file filename))))
@@ -110,12 +87,6 @@ accept a URL in future."
 			 (or payload
 			     `(:auth (:username ,an-username :password ,an-password))))
 	     'emacs-lisp-mode))
-
-(defun print-buf (bufname thing)
-  "Print THING to a temporary buffer named BUFNAME.
-This function is obsoleted by `smart-print-buf', and will be removed."
-  (with-output-to-temp-buffer bufname
-    (print thing)))
 
 (defun smart-print-buf (bufname thing mode)
   "Pop open a buffer BUFNAME containing THING in your Emacs MODE of choice."
@@ -241,6 +212,7 @@ admin user."
 		    "user?current")
 		   'emacs-lisp-mode))
 
+;; FIXME: move this code to .emacs and add a hook to confluence-mode
 (defun an-confluence-doc ()
   "Browse confluence 3.5 docs for symbol at point."
   (interactive)
@@ -277,6 +249,7 @@ admin user."
       (setq *an-current-url* *an-production-url*)
     (setq *an-current-url* *an-sandbox-url*)))
 
+;; move these keybindings into .emacs and document them
 (global-set-key (kbd "C-x C-A A") 'an-auth)
 (global-set-key (kbd "C-x C-A a") 'an-auth-credentials)
 (global-set-key (kbd "C-x C-A S") 'an-switchto)
