@@ -223,6 +223,15 @@ admin user."
 	   "&searchQuery.queryString=ancestorIds%3A252347565+AND+"
 	   (symbol-name (symbol-at-point))))))
 
+
+(defun js-search-documentation ()
+  "Search Mozilla Developer Network documentation for the symbol at point."
+  (interactive)
+  (let ((browse-url-generic-program "open"))
+    (browse-url-generic
+     (concat "https://developer.mozilla.org/en-US/search?q="
+	     (symbol-name (symbol-at-point))))))
+
 (defun an-api-doc ()
   "search appnexus api docs for symbol at point"
   (interactive)
