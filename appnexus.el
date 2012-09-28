@@ -235,7 +235,10 @@ admin user."
 (defun an-who ()
   "Find out what user you are; open in new buffer."
   (interactive)
-  (smart-print-buf "*an-who*" (an-get "user?current")
+  (smart-print-buf "*an-who*"
+		   (an-request
+		    "GET"
+		    "user?current")
 		   'emacs-lisp-mode))
 
 (defun an-confluence-doc ()
@@ -243,23 +246,25 @@ admin user."
   (interactive)
   (let ((browse-url-generic-program "open"))
   (browse-url-generic
-   (concat "https://confluence.atlassian.com/dosearchsite.action?&searchQuery.spaceKey=CONF35&searchQuery.queryString=ancestorIds%3A252347565+AND+"
-	   (symbol-name-before-point)))))
+   (concat "https://confluence.atlassian.com/dosearchsite.action?"
+	   "&searchQuery.spaceKey=CONF35"
+	   "&searchQuery.queryString=ancestorIds%3A252347565+AND+"
+	   (symbol-name (symbol-at-point))))))
 
 (defun an-api-doc ()
   "search appnexus api docs for symbol at point"
   (interactive)
   (let ((browse-url-generic-program "open"))
     (browse-url-generic
-     (concat "https://wiki.appnexus.com/dosearchsite.action?searchQuery.spaceKey=api&searchQuery.queryString=ancestorIds%3A27984339+AND+" (symbol-name-before-point)))))
+     (concat "https://wiki.appnexus.com/dosearchsite.action?"
+	     "searchQuery.spaceKey=api"
+	     "&searchQuery.queryString=ancestorIds%3A27984339+AND+"
+	     (symbol-name (symbol-at-point))))))
 
 (defun an-auth-credentials (username)
   (interactive "susername: ")
   (setq an-username username)
   (setq an-password (read-passwd "password: ")))
-
-;; (defun an-generate-curl-string (service+params &optional verb payload-file)
-;;   (interactive))
 
 (defun an-print-current-url ()
   (interactive)
