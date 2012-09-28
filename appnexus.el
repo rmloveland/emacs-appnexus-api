@@ -2,42 +2,71 @@
 (require 'json)
 (require 'url)
 
+
+;;; group and customization information
+
 (defgroup appnexus nil
-  "Functions that allow for easy interaction with AppNexus APIs."
+  "functions that allow for easy interaction with appnexus apis."
   :group 'processes
   :prefix "an-"
-  :link '(url-link :tag "AppNexus API entry point."
+  :link '(url-link :tag "appnexus api entry point."
 		   "http://api.appnexus.com")
-  :link '(url-link :tag "AppNexus Sandbox API entry point."
+  :link '(url-link :tag "appnexus sandbox api entry point."
 		   "http://api.sand-08.adnxs.net")
-  :link '(url-link :tag "AppNexus API Documentation."
-		   "https://wiki.appnexus.com/display/api/Home"))
+  :link '(url-link :tag "appnexus api documentation."
+		   "https://wiki.appnexus.com/display/api/home"))
+
 
 (defcustom an-username nil
-  "AppNexus API username."
+  "appnexus api username."
   :group 'appnexus
   :type '(string))
 
+
 (defcustom an-password nil
-  "AppNexus API password."
+  "appnexus api password."
   :group 'appnexus
   :type '(string))
+
+
+;;; variables
+
+;; this is used by `an-auth' when you log in; you can set it using 
+;; `an-auth-credentials'
 
 (defvar *an-auth*
   `(:auth
     (:username ,an-username
 	       :password ,an-password)))
 
+
+;; console api urls
+
 (defvar *an-production-url* "http://api.appnexus.com")
-(defvar *an-sandbox-url* "http://api.sand-08.adnxs.net")
+(defvar *an-sandbox-url* "http://hb.sand-08.adnxs.net")
+
+
+;; impbus api urls
+
+(defvar *an-ib-production-url* "http://api.adnxs.com")
+(defvar *an-ib-sandbox-url* "http://api.sand-08.adnxs.net")
+
+
+;; this is used by `an-print-current-url'
+
 (defvar *an-current-url* *an-sandbox-url*)
 
-;; FIXME: Applying `url.el' settings here is hacky
-(setq url-cookie-trusted-urls '(".*adnxs\.net" ".*appnexus\.com"))
+
+(setq url-cookie-trusted-urls '(".*adnxs\.net"
+				".*adnxs\.com"
+				".*appnexus\.com"))
+
+
+;;; functions
 
 (defun an-response (buffer)
-  "Convert the JSON response left by `an-request' in BUFFER into a hash table.
-Then, return that hash table."
+  "convert the json response left by `an-request' in buffer into a hash table.
+then, return that hash table."
   (unwind-protect
       (with-current-buffer buffer
 	(save-excursion
@@ -46,10 +75,11 @@ Then, return that hash table."
 		(response (json-read-from-string (buffer-substring (point) (point-max)))))
 	    response)))))
 
+
 (defun an-request (verb path &optional payload)
-  "Send an HTTP request, VERB, to the service at PATH with PAYLOAD in tow.
-If it exists, PAYLOAD will be a Lisp data structure that we convert into
-JSON on the fly before making the request."
+  "send an http request, verb, to the service at path with payload in tow.
+if it exists, payload will be a lisp data structure that we convert into
+json on the fly before making the request."
   (if payload
       (let ((url-request-method verb)
 	    (url-request-extra-headers '(("Content-Type" . "application/x-www-form-urlencoded")))
@@ -64,11 +94,14 @@ JSON on the fly before making the request."
        (url-retrieve-synchronously
 	(concat *an-current-url* "/" path))))))
 
-;; FIXME: Finish writing this function
+
+;; fixme: finish writing the below function; make it generic enough to handle all
+;; the weird cases. maybe use a translation table?
+
 (defun an-json-fields (filename)
-  "Gather a list of JSON fields available through the API `meta' service.
-This function is unfinished. Currently takes a filename argument, but should
-accept a URL in future."
+  "gather a list of json fields available through the api `meta' service.
+this function is unfinished. currently takes a filename argument, but should
+accept a url in future."
   (let* ((possible-values '(meta fields))
 	(response (let ((json-object-type 'alist))
 		    (assoc 'response (json-read-file filename))))
@@ -78,8 +111,9 @@ accept a URL in future."
 					possible-values)))))
     fields))
 
+
 (defun an-auth (&optional payload)
-  "Authenticate with the API and open the response in a temporary buffer."
+  "authenticate with the api and open the response in a temporary buffer."
   (interactive)
   (smart-print-buf "*an-auth*"
 	     (an-request "POST"
@@ -88,8 +122,9 @@ accept a URL in future."
 			     `(:auth (:username ,an-username :password ,an-password))))
 	     'emacs-lisp-mode))
 
+
 (defun smart-print-buf (bufname thing mode)
-  "Pop open a buffer BUFNAME containing THING in your Emacs MODE of choice."
+  "pop open a buffer bufname containing thing in your emacs mode of choice."
   (interactive)
   (let ((buf (generate-new-buffer bufname))
 	(other-frame t))
@@ -111,19 +146,21 @@ accept a URL in future."
   (goto-char (point-min))
   (print thing buf)))
 
+
 (defun buf2json ()
-  "Convert the current buffer from Elisp to the heavily escaped JSON string
-format preferred by `json.el'. Open the results in a new buffer."
+  "convert the current buffer from elisp to the heavily escaped json string
+format preferred by `json.el'. open the results in a new buffer."
   (interactive)
   (let ((it (read (buffer-string)))
 	(bufname (concat "*json-" (number-to-string (random 1000)) "*"))
 	(mode 'js-mode))
     (smart-print-buf bufname (json-encode it) mode)))
 
+
 (defun dirty-json ()
-  "Convert a buffer of standard JSON to the escaped JSON string format
-preferred by `json.el', and pop open a new buffer with the contents. This
-is an intermediate step for re-conversion to Elisp."
+  "convert a buffer of standard json to the escaped json string format
+preferred by `json.el', and pop open a new buffer with the contents. this
+is an intermediate step for re-conversion to elisp."
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -144,9 +181,10 @@ is an intermediate step for re-conversion to Elisp."
     (while (re-search-forward "\n +" (- (point-max) 1) t)
       (replace-match "" nil t))))
 
+
 (defun clean-json ()
-  "Convert a buffer of the escaped JSON strings preferred by `json.el' into
-standard  JSON, and pop open a new buffer with the contents."
+  "convert a buffer of the escaped json strings preferred by `json.el' into
+standard  json, and pop open a new buffer with the contents."
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -164,8 +202,9 @@ standard  JSON, and pop open a new buffer with the contents."
     (while (re-search-forward "\\\\\\\\" nil t)
       (replace-match "\\" nil t))))
 
+
 (defun buf2lsp ()
-  "Convert the `json.el' escaped JSON string in the current buffer to Elisp,
+  "convert the `json.el' escaped json string in the current buffer to elisp,
 and open the results in a new temp buffer."
   (interactive)
   (let ((it (read (buffer-string)))
@@ -175,8 +214,9 @@ and open the results in a new temp buffer."
     ;; think about using `elisp-format-buffer'
     (switch-to-buffer bufname)))
 
+
 (defun buf-do (verb service+params)
-  "Send a request, VERB, to SERVICE+PARAMS."
+  "send a request, verb, to service+params."
   (interactive "sverb: \nsservice+params: ")
   (let ((payload (read (buffer-string))))
     (smart-print-buf (concat "*" service+params "*")
@@ -185,16 +225,18 @@ and open the results in a new temp buffer."
 			   	   payload)
 	       'emacs-lisp-mode)))
 
+
 (defun an-get (service+params)
-  "Send a standard GET request to SERVICE+PARAMS."
+  "send a standard get request to service+params."
   (interactive "sservice+params: ")
   (smart-print-buf (concat "*" service+params "*")
 	     (an-request "GET"
 			 service+params)
 	     'emacs-lisp-mode))
 
+
 (defun an-switchto (user-id)
-  "Switch to another API user. This function will only work if you're an
+  "switch to another api user. this function will only work if you're an
 admin user."
   (interactive "suser-id: ")
   (smart-print-buf "*an-switchto*"
@@ -203,8 +245,9 @@ admin user."
 			 `(:auth (:switch_to_user ,user-id)))
 	     'emacs-lisp-mode))
 
+
 (defun an-who ()
-  "Find out what user you are; open in new buffer."
+  "find out what user you are; open in new buffer."
   (interactive)
   (smart-print-buf "*an-who*"
 		   (an-request
@@ -212,9 +255,11 @@ admin user."
 		    "user?current")
 		   'emacs-lisp-mode))
 
+
 ;; FIXME: move this code to .emacs and add a hook to confluence-mode
+
 (defun an-confluence-doc ()
-  "Browse confluence 3.5 docs for symbol at point."
+  "search confluence 3.5 docs for symbol at point"
   (interactive)
   (let ((browse-url-generic-program "open"))
   (browse-url-generic
@@ -225,12 +270,13 @@ admin user."
 
 
 (defun js-search-documentation ()
-  "Search Mozilla Developer Network documentation for the symbol at point."
+  "search mozilla developer network documentation for the symbol at point"
   (interactive)
   (let ((browse-url-generic-program "open"))
     (browse-url-generic
      (concat "https://developer.mozilla.org/en-US/search?q="
 	     (symbol-name (symbol-at-point))))))
+
 
 (defun an-api-doc ()
   "search appnexus api docs for symbol at point"
@@ -242,23 +288,29 @@ admin user."
 	     "&searchQuery.queryString=ancestorIds%3A27984339+AND+"
 	     (symbol-name (symbol-at-point))))))
 
+
 (defun an-auth-credentials (username)
   (interactive "susername: ")
   (setq an-username username)
   (setq an-password (read-passwd "password: ")))
 
+
 (defun an-print-current-url ()
   (interactive)
   (message "current api url is %s" *an-current-url*))
 
+
 (defun an-toggle-sand-or-prod-url ()
-  "toggle sand or prod url; todo: authenticate, too?"
+  "toggle sand or prod url"
   (interactive)
   (if (string-equal *an-current-url* *an-sandbox-url*)
       (setq *an-current-url* *an-production-url*)
     (setq *an-current-url* *an-sandbox-url*)))
 
-;; move these keybindings into .emacs and document them
+
+;;; keybindings
+;; move these into `.emacs' and document them
+
 (global-set-key (kbd "C-x C-A A") 'an-auth)
 (global-set-key (kbd "C-x C-A a") 'an-auth-credentials)
 (global-set-key (kbd "C-x C-A S") 'an-switchto)
@@ -280,3 +332,5 @@ admin user."
 (global-set-key (kbd "C-x C-A I") 'dirty-json)
 
 (provide 'appnexus)
+
+;; bye
