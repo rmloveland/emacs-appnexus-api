@@ -1,4 +1,6 @@
 
+* TODO change `browse-url' var inside doc search
+  this should use make-buffer-local like the url cookie stuff
 * TODO implement a delete function
 
 * TODO reporting download
