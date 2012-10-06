@@ -1,0 +1,10 @@
+
+* TODO implement a delete function
+
+* TODO reporting download
+
+* TODO add more api entry points
+
+* TODO write texinfo manual
+
+* TODO consider opening Lisp buffers in elisp-mode + view-mode for `q' usage
