@@ -260,7 +260,7 @@ Note that this function is currently only working on Mac OS X, and should be rew
 	     "&searchQuery.queryString=ancestorIds%3A27984339+AND+"
 	     (symbol-name (symbol-at-point))))))
 
-(defun an-auth-credentials ()
+(defun an-auth-credentials (username)
   "Interactively prompts for the values of your API username and password. If you prefer to set your username and password using Emacs' `customize' command, type `M-x customize-group RET appnexus'."
   (interactive "susername: ")
   (setq an-username username)
