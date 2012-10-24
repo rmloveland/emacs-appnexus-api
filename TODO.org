@@ -1,6 +1,7 @@
 
 * TODO change `browse-url' var inside doc search
   this should use make-buffer-local like the url cookie stuff
+
 * TODO implement a delete function
 
 * TODO reporting download
@@ -9,4 +10,12 @@
 
 * TODO write texinfo manual
 
-* TODO consider opening Lisp buffers in elisp-mode + view-mode for `q' usage
+* TODO consider opening Lisp buffers in elisp-mode + view-mode for `q' usage 
+
+* TODO modify `an-json-fields' with all the different `meta' variants
+
+  Find them all...
+
+  - [ ] fields
+
+  - [ ] meta
