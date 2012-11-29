@@ -350,6 +350,7 @@ by typing `M-x customize-group RET appnexus'."
 
 (global-set-key (kbd "C-x C-A J") 'buf2json)
 (global-set-key (kbd "C-x C-A L") 'buf2lsp)
+(global-set-key (kbd "C-x C-A M") 'an-extract-meta-fields)
 
 (global-set-key (kbd "C-x C-A P") 'buf-do)
 (global-set-key (kbd "C-x C-A G") 'an-get)
