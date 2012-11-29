@@ -85,12 +85,9 @@ JSON before attaching it to the request."
        (url-retrieve-synchronously
 	(concat *an-current-url* "/" path))))))
 
-;; FIXME: Finish writing the below function. Make it generic enough to handle all
-;; the weird non-standard `meta' responses. Maybe use a translation table?
-
 (defun an-extract-meta-fields ()
-  "Given JSON from an API service's `meta' command, return the fields as Lisp.
-This function is currently unfinished."
+  "Given the Lisp response from an API service's `meta' call, create a
+new buffer with just the `fields' list."
   (interactive)
   (let* ((it (read (buffer-string)))
 	 (response (let ((json-object-type 'alist))
