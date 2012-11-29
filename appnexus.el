@@ -88,17 +88,17 @@ JSON before attaching it to the request."
 ;; FIXME: Finish writing the below function. Make it generic enough to handle all
 ;; the weird non-standard `meta' responses. Maybe use a translation table?
 
-(defun an-json-fields (filename)
+(defun an-extract-meta-fields ()
   "Given JSON from an API service's `meta' command, return the fields as Lisp.
 This function is currently unfinished."
-  (let* ((possible-values '(meta fields))
-	(response (let ((json-object-type 'alist))
-		    (assoc 'response (json-read-file filename))))
-	(fields (car (remove-if #'null
-				(mapcar (lambda (val)
-					  (assoc val response))
-					possible-values)))))
-    fields))
+  (interactive)
+  (let* ((it (read (buffer-string)))
+	 (response (let ((json-object-type 'alist))
+		     (assoc 'response it)))
+	 (fields (cdr (assoc 'fields response)))
+	 (bufname (concat "*meta-" (number-to-string (random 1000)) "*"))
+	(mode 'emacs-lisp-mode))
+    (smart-print-buf bufname fields mode)))
 
 (defun an-auth (&optional payload)
   "Authenticates with the API entry point currently in use and opens the
