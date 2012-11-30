@@ -338,6 +338,8 @@ by typing `M-x customize-group RET appnexus'."
 (global-set-key (kbd "C-x C-A E") 'clean-json)
 (global-set-key (kbd "C-x C-A I") 'dirty-json)
 
+(global-set-key (kbd "C-x C-A D") 'an-api-doc)
+
 (provide 'appnexus)
 
 ;; appnexus.el ends here.
