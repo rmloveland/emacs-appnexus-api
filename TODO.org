@@ -12,13 +12,6 @@
 
 * TODO consider opening Lisp buffers in elisp-mode + view-mode for `q' usage 
 
-* TODO reimplement buffer names, this time sanely
-  The names of the converted buffers should inherit from the names of
-  the services/api calls that were used to generate their
-  contents. This will allow the names to propagate outward/upward in a
-  way that's searchable and allows me to gather all of the buffers
-  related to that service/api call together via search.
-
 * TODO modify `an-json-fields' with all the different `meta' variants
 
   Find them all...
@@ -26,3 +19,11 @@
   - [ ] fields
 
   - [ ] meta
+
+* DONE reimplement buffer names, this time sanely
+  CLOSED: [2012-11-30 Fri 14:43]
+  The names of the converted buffers should inherit from the names of
+  the services/api calls that were used to generate their
+  contents. This will allow the names to propagate outward/upward in a
+  way that's searchable and allows me to gather all of the buffers
+  related to that service/api call together via search.
