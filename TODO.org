@@ -1,24 +1,30 @@
 
-* TODO change `browse-url' var inside doc search
-  this should use make-buffer-local like the url cookie stuff
 
 * TODO implement a delete function
 
 * TODO reporting download
+  automate this multi-step process
 
 * TODO add more api entry points
+  imp bus apis
 
 * TODO write texinfo manual
 
-* TODO consider opening Lisp buffers in elisp-mode + view-mode for `q' usage 
-
-* TODO modify `an-json-fields' with all the different `meta' variants
+* TODO modify `an-extract-meta-fields' with all the different `meta' variants
 
   Find them all...
 
   - [ ] fields
 
   - [ ] meta
+* DONE change `browse-url' var inside doc search
+  CLOSED: [2012-11-30 Fri 15:25]
+  this should use make-buffer-local like the url cookie stuff
+  (moved to `.emacs' instead)
+
+* DONE consider opening Lisp buffers in elisp-mode + view-mode for `q' usage 
+  CLOSED: [2012-11-30 Fri 15:19]
+  Considered, and rejected.
 
 * DONE reimplement buffer names, this time sanely
   CLOSED: [2012-11-30 Fri 14:43]
