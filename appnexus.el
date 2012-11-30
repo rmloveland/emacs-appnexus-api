@@ -93,7 +93,7 @@ new buffer with just the `fields' list."
 	 (response (let ((json-object-type 'alist))
 		     (assoc 'response it)))
 	 (fields (cdr (assoc 'fields response)))
-	 (bufname (concat "*meta-" (number-to-string (random 1000)) "*"))
+	 (bufname (concat (buffer-name) " (META)"))
 	(mode 'emacs-lisp-mode))
     (smart-print-buf bufname fields mode)))
 
@@ -139,7 +139,7 @@ This escaped string is preferred by the `json' package. Opens the results in
 a new buffer."
   (interactive)
   (let ((it (read (buffer-string)))
-	(bufname (concat "*json-" (number-to-string (random 1000)) "*"))
+	(bufname (concat (buffer-name) " (JSON)"))
 	(mode 'js-mode))
     (smart-print-buf bufname (json-encode it) mode)))
 
@@ -211,7 +211,7 @@ This opens new buffers and performs other unnecessary stateful operations,
 and should be rewritten."
   (interactive)
   (let ((it (read (buffer-string)))
-	(bufname (concat "*lsp-" (number-to-string (random 1000)) "*"))
+	(bufname (concat (buffer-name) " (LISP)"))
 	(mode 'emacs-lisp-mode))
     (smart-print-buf bufname (json-read-from-string it) mode)
     (switch-to-buffer bufname)))
