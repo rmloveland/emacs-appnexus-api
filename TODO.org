@@ -6,7 +6,10 @@
   automate this multi-step process
 
 * TODO add more api entry points
-  imp bus apis
+  imp bus apis, etc.
+  rewrite the existing `an-toggle-sand-or-prod-url' to store api URLs
+  in a list (at which point the variable will probably need to be
+  renamed)
 
 * TODO write texinfo manual
 
