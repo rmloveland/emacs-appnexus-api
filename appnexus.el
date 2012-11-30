@@ -317,26 +317,6 @@ by typing `M-x customize-group RET appnexus'."
       (setq *an-current-url* *an-production-url*)
     (setq *an-current-url* *an-sandbox-url*)))
 
-;; FIXME: move these functions to `.emacs'
-
-(defun an-confluence-doc ()
-  "Search Confluence 3.5 documentation for the symbol at point."
-  (interactive)
-  (let ((browse-url-generic-program "open"))
-  (browse-url-generic
-   (concat "https://confluence.atlassian.com/dosearchsite.action?"
-	   "&searchQuery.spaceKey=CONF35"
-	   "&searchQuery.queryString=ancestorIds%3A252347565+AND+"
-	   (symbol-name (symbol-at-point))))))
-
-(defun js-search-documentation ()
-  "search mozilla developer network documentation for the symbol at point"
-  (interactive)
-  (let ((browse-url-generic-program "open"))
-    (browse-url-generic
-     (concat "https://developer.mozilla.org/en-US/search?q="
-	     (symbol-name (symbol-at-point))))))
-
 ;; keybindings
 ;; FIXME: move these into `.emacs' and document them
 
@@ -354,9 +334,6 @@ by typing `M-x customize-group RET appnexus'."
 
 (global-set-key (kbd "C-x C-A P") 'buf-do)
 (global-set-key (kbd "C-x C-A G") 'an-get)
-
-(global-set-key (kbd "C-x C-A C") 'an-confluence-doc)
-(global-set-key (kbd "C-x C-A D") 'an-api-doc)
 
 (global-set-key (kbd "C-x C-A E") 'clean-json)
 (global-set-key (kbd "C-x C-A I") 'dirty-json)
