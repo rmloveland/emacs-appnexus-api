@@ -93,7 +93,7 @@ new buffer with just the `fields' list."
 	 (response (let ((json-object-type 'alist))
 		     (assoc 'response it)))
 	 (fields (cdr (assoc 'fields response)))
-	 (bufname (concat (buffer-name) " (META)"))
+	 (bufname (concat *an-current-url* " " (buffer-name) " (META)"))
 	(mode 'emacs-lisp-mode))
     (smart-print-buf bufname fields mode)))
 
@@ -246,7 +246,7 @@ designed in the first place, but grown."
   (interactive "sverb: \nsservice+params: ")
   (let ((payload (read (buffer-string))))
     (smart-print-buf
-     (concat "*" service+params "*")
+     (concat *an-current-url* "/" service+params)
      (an-request verb
 		 service+params
 		 payload)
@@ -256,7 +256,7 @@ designed in the first place, but grown."
   "Sends a GET request to SERVICE+PARAMS. Prompts for SERVICE+PARAMS
 in the minibuffer. Opens the response in a new Lisp buffer."
   (interactive "sservice+params: ")
-  (smart-print-buf (concat "*" service+params "*")
+  (smart-print-buf (concat *an-current-url* "/" service+params)
 	     (an-request "GET"
 			 service+params)
 	     'emacs-lisp-mode))
