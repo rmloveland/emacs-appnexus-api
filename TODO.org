@@ -1,4 +1,9 @@
 
+* TODO implement a save function
+  this will save the buffer as its current name, so that `http://sand.api.appnexus.com/member/meta.el' will save under that name
+
+* TODO rename buffers with file types
+  instead of " (JSON)", append a file extension ".json" for ease of saving
 
 * TODO implement a delete function
 
