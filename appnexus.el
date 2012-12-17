@@ -216,7 +216,7 @@ and should be rewritten."
     (smart-print-buf bufname (json-read-from-string it) mode)
     (switch-to-buffer bufname)))
 
-(defun buf-do (VERB SERVICE+PARAMS)
+(defun buf-do (verb service+params)
   "Sends an HTTP VERB to SERVICE+PARAMS, with the current buffer's
 contents in the header. VERB should be either PUT or POST; for GET
 calls, use `an-get'.
