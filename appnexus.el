@@ -96,6 +96,18 @@ new buffer with just the `fields' list."
 	(mode 'emacs-lisp-mode))
     (smart-print-buf bufname fields mode)))
 
+(defun an-extract-report-meta-fields ()
+  "Given the Lisp response from the Report Service's various
+`meta' calls, create a new buffer with just the right fields."
+  (interactive)
+  (let* ((it (read (buffer-string)))
+	 (response (let ((json-object-type 'alist))
+		     (assoc 'response it)))
+	 (fields (cdr (assoc 'meta response)))
+	 (bufname (concat (buffer-name) " (REPORT META FIELDS ONLY)"))
+	(mode 'emacs-lisp-mode))
+    (smart-print-buf bufname fields mode)))
+
 (defun an-auth (&optional payload)
   "Authenticates with the API entry point currently in use and opens the
 response in a new Lisp buffer. Takes an optional Lisp PAYLOAD defining
@@ -330,6 +342,7 @@ by typing `M-x customize-group RET appnexus'."
 (global-set-key (kbd "C-x C-A J") 'buf2json)
 (global-set-key (kbd "C-x C-A L") 'buf2lsp)
 (global-set-key (kbd "C-x C-A M") 'an-extract-meta-fields)
+(global-set-key (kbd "C-x C-A R") 'an-extract-report-meta-fields)
 
 (global-set-key (kbd "C-x C-A P") 'buf-do)
 (global-set-key (kbd "C-x C-A G") 'an-get)
