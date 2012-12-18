@@ -96,13 +96,6 @@ new buffer with just the `fields' list."
 	(mode 'emacs-lisp-mode))
     (smart-print-buf bufname fields mode)))
 
-(defun an-get-response-body (title response-json)
-  ""
-  (let ((result (assoc title (assoc 'response response-json))))
-    (cond ((equal title 'invoices)
-	   (elt (cdr result) 0))
-	  (t result))))
-
 (defun an-auth (&optional payload)
   "Authenticates with the API entry point currently in use and opens the
 response in a new Lisp buffer. Takes an optional Lisp PAYLOAD defining
