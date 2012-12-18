@@ -2,14 +2,6 @@
 * TODO rename functions
   These function names are God-awful.
 
-* TODO stop doing X->lisp conversion of the server's responses
-  nothing wrong with posting the contents of lisp buffers, but there's
-  no reason to require that the server's responses (which can be JSON,
-  CSV, etc.) be translated into Lisp. That's why there's `buf2lsp'.
-
-  This will make finishing the report download TODO (elsewhere in this
-  list) easier.
-
 * TODO implement a save function
   this will save the buffer as its current name, so that `http://sand.api.appnexus.com/member/meta.el' will save under that name
 
@@ -30,6 +22,14 @@
 * TODO write texinfo manual
 
 * TODO modify `an-extract-meta-fields' with the different `meta' variants
+
+* DONE stop doing X->lisp conversion of the server's responses
+  nothing wrong with posting the contents of lisp buffers, but there's
+  no reason to require that the server's responses (which can be JSON,
+  CSV, etc.) be translated into Lisp. That's why there's `buf2lsp'.
+
+  This will make finishing the report download TODO (elsewhere in this
+  list) easier.
 
 * DONE change `browse-url' var inside doc search
   CLOSED: [2012-11-30 Fri 15:25]
