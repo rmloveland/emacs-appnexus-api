@@ -61,8 +61,7 @@ Lisp hash table."
 	(save-excursion
 	  (goto-char url-http-end-of-headers)
 	  (let ((json-key-type 'hash-table)
-		(response (json-read-from-string
-			   (buffer-substring (point) (point-max)))))
+		(response (buffer-substring (point) (point-max))))
 	    response)))))
 
 (defun an-request (verb path &optional payload)
