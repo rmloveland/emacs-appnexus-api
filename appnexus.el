@@ -119,7 +119,7 @@ your authentication credentials."
 	       "auth"
 	       (or payload
 		   `(:auth (:username ,an-username :password ,an-password))))
-   'emacs-lisp-mode))
+   'js-mode))
 
 (defun smart-print-buf (bufname stuff mode)
   "Opens a new buffer BUFNAME and prints STUFF into it, using the Emacs
@@ -261,7 +261,7 @@ designed in the first place, but grown."
      (an-request verb
 		 service+params
 		 payload)
-     'emacs-lisp-mode)))
+     'fundamental-mode)))
 
 (defun an-get (service+params)
   "Sends a GET request to SERVICE+PARAMS. Prompts for SERVICE+PARAMS
@@ -270,7 +270,7 @@ in the minibuffer. Opens the response in a new Lisp buffer."
   (smart-print-buf (concat *an-current-url* "/" service+params)
 	     (an-request "GET"
 			 service+params)
-	     'emacs-lisp-mode))
+	     'fundamental-mode))
 
 (defun an-switchto (user-id)
   "Switches to the API user denoted by USER-ID. Opens the response in
@@ -280,7 +280,7 @@ a new Lisp buffer."
 	     (an-request "POST"
 			 "auth"
 			 `(:auth (:switch_to_user ,user-id)))
-	     'emacs-lisp-mode))
+	     'fundamental-mode))
 
 (defun an-who ()
   "Displays what user you are currently operating as. Opens the
@@ -290,7 +290,7 @@ response in a new Lisp buffer."
 		   (an-request
 		    "GET"
 		    "user?current")
-		   'emacs-lisp-mode))
+		   'fundamental-mode))
 
 (defun an-api-doc ()
   "Searches the API documentation for the symbol at point. Opens the
