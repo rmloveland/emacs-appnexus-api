@@ -257,7 +257,7 @@ designed in the first place, but grown."
   (interactive "sverb: \nsservice+params: ")
   (let ((payload (read (buffer-string))))
     (smart-print-buf
-     (concat *an-current-url* "/" service+params)
+     (concat *an-current-url* "/" service+params "[" verb "]")
      (an-request verb
 		 service+params
 		 payload)
