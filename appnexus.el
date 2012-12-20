@@ -114,7 +114,7 @@ response in a new Lisp buffer. Takes an optional Lisp PAYLOAD defining
 your authentication credentials."
   (interactive)
   (smart-print-buf
-   "*an-auth*"
+   (concat *an-current-url* "/auth")
    (an-request "POST"
 	       "auth"
 	       (or payload
