@@ -121,7 +121,7 @@ your authentication credentials."
 		   `(:auth (:username ,an-username :password ,an-password))))
    'js-mode))
 
-(defun smart-print-buf (bufname stuff mode)
+(defun an-smart-print-buf (bufname stuff mode)
   "Opens a new buffer BUFNAME and prints STUFF into it, using the Emacs
 MODE of your choice."
   (interactive)
@@ -144,7 +144,7 @@ MODE of your choice."
   (goto-char (point-min))
   (print stuff buf)))
 
-(defun buf2json ()
+(defun an-buf2json ()
   "Converts the current buffer from Lisp to a string containing escaped JSON.
 This escaped string is preferred by the `json' package. Opens the results in
 a new buffer."
@@ -152,15 +152,15 @@ a new buffer."
   (let ((it (read (buffer-string)))
 	(bufname (concat (buffer-name) ".json"))
 	(mode 'js-mode))
-    (smart-print-buf bufname (json-encode it) mode)))
+    (an-smart-print-buf bufname (json-encode it) mode)))
 
-(defun dirty-json ()
+(defun an-dirty-json ()
   "Converts the current buffer from raw JSON to a string containing
 escaped JSON, as preferred by the `json' package. Opens the results
 in a new buffer.
 
 This is currently an intermediate step in the conversion from JSON to
-Lisp, which involves invoking the interactive commands `dirty-json'
+Lisp, which involves invoking the interactive commands `an-dirty-json'
 and `buf2lsp' in sequence. This opens new buffers and performs other
 unnecessary stateful operations, and should be rewritten."
   (interactive)
@@ -185,12 +185,12 @@ unnecessary stateful operations, and should be rewritten."
     (while (re-search-forward "\n +" (- (point-max) 1) t)
       (replace-match "" nil t))))
 
-(defun clean-json ()
+(defun an-clean-json ()
   "Converts the current buffer from a string containing escaped JSON into
 raw JSON. Opens the results in a new buffer.
 
 This is currently an intermediate step in the conversion from Lisp to JSON,
-which involves invoking the commands `buf2json' and `clean-json' in sequence.
+which involves invoking the commands `an-buf2json' and `an-clean-json' in sequence.
 This opens new buffers and performs other unnecessary stateful operations,
 and should be rewritten."
   (interactive)
@@ -212,22 +212,22 @@ and should be rewritten."
     (while (re-search-forward "\\\\\\\\" nil t)
       (replace-match "\\" nil t))))
 
-(defun buf2lsp ()
+(defun an-buf2lsp ()
   "Converts the current buffer from a string containing escaped JSON into
 Lisp. Opens the results in a new buffer.
 
 This is currently an intermediate step in the conversion from JSON to Lisp,
-which involves invoking the commands `dirty-json' and `buf2lsp' in sequence.
+which involves invoking the commands `an-dirty-json' and `an-buf2lsp' in sequence.
 This opens new buffers and performs other unnecessary stateful operations,
 and should be rewritten."
   (interactive)
   (let ((it (read (buffer-string)))
 	(bufname (concat (buffer-name) ".el"))
 	(mode 'emacs-lisp-mode))
-    (smart-print-buf bufname (json-read-from-string it) mode)
+    (an-smart-print-buf bufname (json-read-from-string it) mode)
     (switch-to-buffer bufname)))
 
-(defun buf-do (verb service+params)
+(defun an-buf-do (verb service+params)
   "Sends an HTTP VERB to SERVICE+PARAMS, with the current buffer's
 contents in the header. VERB should be either PUT or POST; for GET
 calls, use `an-get'.
@@ -238,15 +238,15 @@ a new buffer.
 
 Note that you should be in a buffer containing Lisp as understood by
 the `json' package when you invoke this command. The easiest way to
-get to this state is using the `buf2lsp' command in a sequence like
+get to this state is using the `an-buf2lsp' command in a sequence like
 the following:
 
-1. From a JSON buffer, invoke the command `buf2lsp', which will open a
+1. From a JSON buffer, invoke the command `an-buf2lsp', which will open a
 new buffer containing the Lisp equivalent. Note that this step is
 optional, since you may write your JSON in Lisp directly and skip to
 step 2.
 
-2. Invoke the `buf-do' command inside the Lisp buffer. The Lisp in
+2. Invoke the `an-buf-do' command inside the Lisp buffer. The Lisp in
 this buffer will be sent to the API entry point as JSON; you will
 receive a JSON response that is converted to Lisp and opened in (yet
 another) new buffer.
@@ -256,7 +256,7 @@ many inefficiencies that can be removed; it was never actually
 designed in the first place, but grown."
   (interactive "sverb: \nsservice+params: ")
   (let ((payload (read (buffer-string))))
-    (smart-print-buf
+    (an-smart-print-buf
      (concat *an-current-url* "/" service+params "[" verb "]")
      (an-request verb
 		 service+params
@@ -267,7 +267,7 @@ designed in the first place, but grown."
   "Sends a GET request to SERVICE+PARAMS. Prompts for SERVICE+PARAMS
 in the minibuffer. Opens the response in a new Lisp buffer."
   (interactive "sservice+params: ")
-  (smart-print-buf (concat *an-current-url* "/" service+params)
+  (an-smart-print-buf (concat *an-current-url* "/" service+params)
 	     (an-request "GET"
 			 service+params)
 	     'fundamental-mode))
@@ -276,7 +276,7 @@ in the minibuffer. Opens the response in a new Lisp buffer."
   "Switches to the API user denoted by USER-ID. Opens the response in
 a new Lisp buffer."
   (interactive "suser-id: ")
-  (smart-print-buf "*an-switchto*"
+  (an-smart-print-buf "*an-switchto*"
 	     (an-request "POST"
 			 "auth"
 			 `(:auth (:switch_to_user ,user-id)))
@@ -286,7 +286,7 @@ a new Lisp buffer."
   "Displays what user you are currently operating as. Opens the
 response in a new Lisp buffer."
   (interactive)
-  (smart-print-buf "*an-who*"
+  (an-smart-print-buf "*an-who*"
 		   (an-request
 		    "GET"
 		    "user?current")
@@ -339,16 +339,16 @@ by typing `M-x customize-group RET appnexus'."
 (global-set-key (kbd "C-x C-A w") 'an-print-current-url)
 (global-set-key (kbd "C-x C-A T") 'an-toggle-sand-or-prod-url)
 
-(global-set-key (kbd "C-x C-A J") 'buf2json)
-(global-set-key (kbd "C-x C-A L") 'buf2lsp)
+(global-set-key (kbd "C-x C-A J") 'an-buf2json)
+(global-set-key (kbd "C-x C-A L") 'an-buf2lsp)
 (global-set-key (kbd "C-x C-A M") 'an-extract-meta-fields)
 (global-set-key (kbd "C-x C-A R") 'an-extract-report-meta-fields)
 
-(global-set-key (kbd "C-x C-A P") 'buf-do)
+(global-set-key (kbd "C-x C-A P") 'an-buf-do)
 (global-set-key (kbd "C-x C-A G") 'an-get)
 
-(global-set-key (kbd "C-x C-A E") 'clean-json)
-(global-set-key (kbd "C-x C-A I") 'dirty-json)
+(global-set-key (kbd "C-x C-A E") 'an-clean-json)
+(global-set-key (kbd "C-x C-A I") 'an-dirty-json)
 
 (global-set-key (kbd "C-x C-A D") 'an-api-doc)
 
