@@ -94,7 +94,7 @@ new buffer with just the `fields' list."
 	 (fields (cdr (assoc 'fields response)))
 	 (bufname (concat (buffer-name) " (META FIELDS ONLY)"))
 	(mode 'emacs-lisp-mode))
-    (smart-print-buf bufname fields mode)))
+    (an-smart-print-buf bufname fields mode)))
 
 (defun an-extract-report-meta-fields ()
   "Given the Lisp response from the Report Service's various
@@ -106,14 +106,14 @@ new buffer with just the `fields' list."
 	 (fields (cdr (assoc 'meta response)))
 	 (bufname (concat (buffer-name) " (REPORT META FIELDS ONLY)"))
 	(mode 'emacs-lisp-mode))
-    (smart-print-buf bufname fields mode)))
+    (an-smart-print-buf bufname fields mode)))
 
 (defun an-auth (&optional payload)
   "Authenticates with the API entry point currently in use and opens the
 response in a new Lisp buffer. Takes an optional Lisp PAYLOAD defining
 your authentication credentials."
   (interactive)
-  (smart-print-buf
+  (an-smart-print-buf
    (concat *an-current-url* "/auth")
    (an-request "POST"
 	       "auth"
