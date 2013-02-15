@@ -261,7 +261,7 @@ designed in the first place, but grown."
      (an-request verb
 		 service+params
 		 payload)
-     'fundamental-mode)))
+     'js-mode)))
 
 (defun an-get (service+params)
   "Sends a GET request to SERVICE+PARAMS. Prompts for SERVICE+PARAMS
@@ -270,7 +270,7 @@ in the minibuffer. Opens the response in a new Lisp buffer."
   (an-smart-print-buf (concat *an-current-url* "/" service+params)
 	     (an-request "GET"
 			 service+params)
-	     'fundamental-mode))
+	     'js-mode))
 
 (defun an-switchto (user-id)
   "Switches to the API user denoted by USER-ID. Opens the response in
