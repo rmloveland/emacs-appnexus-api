@@ -40,12 +40,6 @@ in. Set your credentials using the `anx-auth-credentials' command.")
 (defvar *anx-sandbox-url* "http://sand.api.appnexus.com"
   "Sandbox Console API entry point.")
 
-(defvar *anx-impbus-production-url* "http://api.adnxs.com"
-  "Production Imp Bus API entry point.")
-
-(defvar *anx-impbus-sandbox-url* "http://api.sand-08.adnxs.net"
-  "Sandbox Imp Bus API entry point.")
-
 (defvar *anx-current-url* *anx-sandbox-url*
   "This variable holds the value of the current API entry point. Toggle
 the value of this variable with the `anx-toggle-sand-or-prod-url' command.")
