@@ -1,3 +1,17 @@
+;;; appnexus.el --- Make calls to the AppNexus API with
+;;; keychords. Write Elisp instead of JSON.
+
+;; Copyright (C) 2013 Rich Loveland
+
+;; Author: Rich Loveland
+;; Version: 0.1
+;; Keywords: convenience, JSON, REST, API
+
+;; This file is NOT part of GNU Emacs.
+
+;; This code is written by Richard M. Loveland and placed in the
+;; Public Domain. All warranties are disclaimed.
+
 (require 'cl)
 (require 'json)
 (require 'url)
@@ -350,4 +364,4 @@ by typing `M-x customize-group RET appnexus'."
 
 (provide 'appnexus)
 
-;; appnexus.el ends here.
+;;; appnexus.el ends here.
