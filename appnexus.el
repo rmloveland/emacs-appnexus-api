@@ -27,12 +27,12 @@
 
 ;; Variables
 
-(defvar *anx-auth*
+(defvar *anx-authentication-credentials*
   `(:auth
     (:username ,anx-username
 	       :password ,anx-password))
-  "The username and password stored here are used by `anx-auth' when you log
-in. Set your credentials using the `anx-auth-credentials' command.")
+  "The username and password stored here are used by `anx-authenticate' when you log
+in. Set your credentials using the `anx-get-user-authentication-credentials' command.")
 
 (defvar *anx-production-url* "http://api.appnexus.com"
   "Production Console API entry point.")
@@ -42,7 +42,7 @@ in. Set your credentials using the `anx-auth-credentials' command.")
 
 (defvar *anx-current-url* *anx-sandbox-url*
   "This variable holds the value of the current API entry point. Toggle
-the value of this variable with the `anx-toggle-sand-or-prod-url' command.")
+the value of this variable with the `anx-toggle-current-api-url' command.")
 
 ;; The variable `url-cookie-trusted-urls' is from the built-in `url'
 ;; package.  We don't want to clobber the global value, so we set a
@@ -93,7 +93,7 @@ new buffer with just the `fields' list."
 	 (fields (cdr (assoc 'fields response)))
 	 (bufname (concat (buffer-name) " (META FIELDS ONLY)"))
 	(mode 'emacs-lisp-mode))
-    (anx-smart-print-buf bufname fields mode)))
+    (anx-pop-up-buffer bufname fields mode)))
 
 (defun anx-extract-report-meta-fields ()
   "Given the Lisp response from the Report Service's various
@@ -105,14 +105,14 @@ new buffer with just the `fields' list."
 	 (fields (cdr (assoc 'meta response)))
 	 (bufname (concat (buffer-name) " (REPORT META FIELDS ONLY)"))
 	(mode 'emacs-lisp-mode))
-    (anx-smart-print-buf bufname fields mode)))
+    (anx-pop-up-buffer bufname fields mode)))
 
-(defun anx-auth (&optional payload)
+(defun anx-authenticate (&optional payload)
   "Authenticates with the API entry point currently in use and opens the
 response in a new Lisp buffer. Takes an optional Lisp PAYLOAD defining
 your authentication credentials."
   (interactive)
-  (anx-smart-print-buf
+  (anx-pop-up-buffer
    (concat *anx-current-url* "/auth")
    (anx-request "POST"
 	       "auth"
@@ -120,7 +120,7 @@ your authentication credentials."
 		   `(:auth (:username ,anx-username :password ,anx-password))))
    'js-mode))
 
-(defun anx-smart-print-buf (bufname stuff mode)
+(defun anx-pop-up-buffer (bufname stuff mode)
   "Opens a new buffer BUFNAME and prints STUFF into it, using the Emacs
 MODE of your choice."
   (interactive)
@@ -143,7 +143,7 @@ MODE of your choice."
   (goto-char (point-min))
   (print stuff buf)))
 
-(defun anx-buf2json ()
+(defun anx-lisp-to-json ()
   "Converts the current buffer from Lisp to a string containing escaped JSON.
 This escaped string is preferred by the `json' package. Opens the results in
 a new buffer."
@@ -151,15 +151,15 @@ a new buffer."
   (let ((it (read (buffer-string)))
 	(bufname (concat (buffer-name) ".json"))
 	(mode 'js-mode))
-    (anx-smart-print-buf bufname (json-encode it) mode)))
+    (anx-pop-up-buffer bufname (json-encode it) mode)))
 
-(defun anx-dirty-json ()
+(defun anx-escape-json ()
   "Converts the current buffer from raw JSON to a string containing
 escaped JSON, as preferred by the `json' package. Opens the results
 in a new buffer.
 
 This is currently an intermediate step in the conversion from JSON to
-Lisp, which involves invoking the interactive commands `anx-dirty-json'
+Lisp, which involves invoking the interactive commands `anx-escape-json'
 and `buf2lsp' in sequence. This opens new buffers and performs other
 unnecessary stateful operations, and should be rewritten."
   (interactive)
@@ -184,12 +184,12 @@ unnecessary stateful operations, and should be rewritten."
     (while (re-search-forward "\n +" (- (point-max) 1) t)
       (replace-match "" nil t))))
 
-(defun anx-clean-json ()
+(defun anx-unescape-json ()
   "Converts the current buffer from a string containing escaped JSON into
 raw JSON. Opens the results in a new buffer.
 
 This is currently an intermediate step in the conversion from Lisp to JSON,
-which involves invoking the commands `anx-buf2json' and `anx-clean-json' in sequence.
+which involves invoking the commands `anx-lisp-to-json' and `anx-unescape-json' in sequence.
 This opens new buffers and performs other unnecessary stateful operations,
 and should be rewritten."
   (interactive)
@@ -211,22 +211,22 @@ and should be rewritten."
     (while (re-search-forward "\\\\\\\\" nil t)
       (replace-match "\\" nil t))))
 
-(defun anx-buf2lsp ()
+(defun anx-json-to-lisp ()
   "Converts the current buffer from a string containing escaped JSON into
 Lisp. Opens the results in a new buffer.
 
 This is currently an intermediate step in the conversion from JSON to Lisp,
-which involves invoking the commands `anx-dirty-json' and `anx-buf2lsp' in sequence.
+which involves invoking the commands `anx-escape-json' and `anx-json-to-lisp' in sequence.
 This opens new buffers and performs other unnecessary stateful operations,
 and should be rewritten."
   (interactive)
   (let ((it (read (buffer-string)))
 	(bufname (concat (buffer-name) ".el"))
 	(mode 'emacs-lisp-mode))
-    (anx-smart-print-buf bufname (json-read-from-string it) mode)
+    (anx-pop-up-buffer bufname (json-read-from-string it) mode)
     (switch-to-buffer bufname)))
 
-(defun anx-buf-do (verb service+params)
+(defun anx-send-buffer (verb service+params)
   "Sends an HTTP VERB to SERVICE+PARAMS, with the current buffer's
 contents in the header. VERB should be either PUT or POST; for GET
 calls, use `anx-get'.
@@ -237,15 +237,15 @@ a new buffer.
 
 Note that you should be in a buffer containing Lisp as understood by
 the `json' package when you invoke this command. The easiest way to
-get to this state is using the `anx-buf2lsp' command in a sequence like
+get to this state is using the `anx-json-to-lisp' command in a sequence like
 the following:
 
-1. From a JSON buffer, invoke the command `anx-buf2lsp', which will open a
+1. From a JSON buffer, invoke the command `anx-json-to-lisp', which will open a
 new buffer containing the Lisp equivalent. Note that this step is
 optional, since you may write your JSON in Lisp directly and skip to
 step 2.
 
-2. Invoke the `anx-buf-do' command inside the Lisp buffer. The Lisp in
+2. Invoke the `anx-send-buffer' command inside the Lisp buffer. The Lisp in
 this buffer will be sent to the API entry point as JSON; you will
 receive a JSON response that is converted to Lisp and opened in (yet
 another) new buffer.
@@ -255,7 +255,7 @@ many inefficiencies that can be removed; it was never actually
 designed in the first place, but grown."
   (interactive "sverb: \nsservice+params: ")
   (let ((payload (read (buffer-string))))
-    (anx-smart-print-buf
+    (anx-pop-up-buffer
      (concat *anx-current-url* "/" service+params "[" verb "]")
      (anx-request verb
 		 service+params
@@ -266,32 +266,32 @@ designed in the first place, but grown."
   "Sends a GET request to SERVICE+PARAMS. Prompts for SERVICE+PARAMS
 in the minibuffer. Opens the response in a new Lisp buffer."
   (interactive "sservice+params: ")
-  (anx-smart-print-buf (concat *anx-current-url* "/" service+params)
+  (anx-pop-up-buffer (concat *anx-current-url* "/" service+params)
 	     (anx-request "GET"
 			 service+params)
 	     'js-mode))
 
-(defun anx-switchto (user-id)
+(defun anx-switch-users (user-id)
   "Switches to the API user denoted by USER-ID. Opens the response in
 a new Lisp buffer."
   (interactive "suser-id: ")
-  (anx-smart-print-buf "*anx-switchto*"
+  (anx-pop-up-buffer "*anx-switch-users*"
 	     (anx-request "POST"
 			 "auth"
 			 `(:auth (:switch_to_user ,user-id)))
 	     'js-mode))
 
-(defun anx-who ()
+(defun anx-who-am-i ()
   "Displays what user you are currently operating as. Opens the
 response in a new Lisp buffer."
   (interactive)
-  (anx-smart-print-buf "*anx-who*"
+  (anx-pop-up-buffer "*anx-who-am-i*"
 		   (anx-request
 		    "GET"
 		    "user?current")
 		   'js-mode))
 
-(defun anx-api-doc ()
+(defun anx-browse-api-docs ()
   "Searches the API documentation for the symbol at point. Opens the
 results in a web browser.
 
@@ -306,21 +306,19 @@ nag him about it."
 	     "&searchQuery.queryString=ancestorIds%3A27984339+AND+"
 	     (symbol-name (symbol-at-point))))))
 
-(defun anx-auth-credentials (username)
+(defun anx-get-user-authentication-credentials (username)
   "Prompts for your API username and password. You can also set them
 by typing `M-x customize-group RET appnexus'."
   (interactive "susername: ")
   (setq anx-username username)
   (setq anx-password (read-passwd "password: ")))
 
-(defun anx-print-current-url ()
+(defun anx-display-current-api-url ()
   "Prints the current API URL in the minibuffer."
   (interactive)
   (message "current api url is %s" *anx-current-url*))
 
-;; FIXME: Rewrite this to use a list.
-
-(defun anx-toggle-sand-or-prod-url ()
+(defun anx-toggle-current-api-url ()
   "Switches between ``sand'' and ``prod'' Console APIs."
   (interactive)
   (if (string-equal *anx-current-url* *anx-sandbox-url*)
@@ -329,26 +327,26 @@ by typing `M-x customize-group RET appnexus'."
 
 ;; Keybindings
 
-(global-set-key (kbd "C-x C-A A") 'anx-auth)
-(global-set-key (kbd "C-x C-A a") 'anx-auth-credentials)
-(global-set-key (kbd "C-x C-A S") 'anx-switchto)
+(global-set-key (kbd "C-x C-A A") 'anx-authenticate)
+(global-set-key (kbd "C-x C-A a") 'anx-get-user-authentication-credentials)
+(global-set-key (kbd "C-x C-A S") 'anx-switch-users)
 
-(global-set-key (kbd "C-x C-A W") 'anx-who)
-(global-set-key (kbd "C-x C-A w") 'anx-print-current-url)
-(global-set-key (kbd "C-x C-A T") 'anx-toggle-sand-or-prod-url)
+(global-set-key (kbd "C-x C-A W") 'anx-who-am-i)
+(global-set-key (kbd "C-x C-A w") 'anx-display-current-api-url)
+(global-set-key (kbd "C-x C-A T") 'anx-toggle-current-api-url)
 
-(global-set-key (kbd "C-x C-A J") 'anx-buf2json)
-(global-set-key (kbd "C-x C-A L") 'anx-buf2lsp)
+(global-set-key (kbd "C-x C-A J") 'anx-lisp-to-json)
+(global-set-key (kbd "C-x C-A L") 'anx-json-to-lisp)
 (global-set-key (kbd "C-x C-A M") 'anx-extract-meta-fields)
 (global-set-key (kbd "C-x C-A R") 'anx-extract-report-meta-fields)
 
-(global-set-key (kbd "C-x C-A P") 'anx-buf-do)
+(global-set-key (kbd "C-x C-A P") 'anx-send-buffer)
 (global-set-key (kbd "C-x C-A G") 'anx-get)
 
-(global-set-key (kbd "C-x C-A E") 'anx-clean-json)
-(global-set-key (kbd "C-x C-A I") 'anx-dirty-json)
+(global-set-key (kbd "C-x C-A U") 'anx-unescape-json)
+(global-set-key (kbd "C-x C-A E") 'anx-escape-json)
 
-(global-set-key (kbd "C-x C-A D") 'anx-api-doc)
+(global-set-key (kbd "C-x C-A D") 'anx-browse-api-docs)
 
 (provide 'appnexus)
 
