@@ -1,49 +1,14 @@
 
-* TODO rename functions
-  These function names are God-awful.
+* TODO Implement a save function
 
-* TODO implement a save function
-  this will save the buffer as its current name, so that `http://sand.api.appnexus.com/member/meta.el' will save under that name
+  This will save the buffer as its current name, so that (for example)
+  a buffer named http://sand.api.appnexus.com/member/meta.el will save
+  under that name.
 
-* TODO rename buffers with file types
-  instead of " (JSON)", append a file extension ".json" for ease of saving
+* TODO Implement HTTP DELETE calls
 
-* TODO implement a delete function
+* TODO Reporting download
 
-* TODO reporting download
-  automate this multi-step process
+  Automate this multi-step process...
 
-* TODO add more api entry points
-  imp bus apis, etc.
-  rewrite the existing `an-toggle-sand-or-prod-url' to store api URLs
-  in a list (at which point the variable will probably need to be
-  renamed)
-
-* TODO write texinfo manual
-
-* TODO modify `an-extract-meta-fields' with the different `meta' variants
-
-* DONE stop doing X->lisp conversion of the server's responses
-  nothing wrong with posting the contents of lisp buffers, but there's
-  no reason to require that the server's responses (which can be JSON,
-  CSV, etc.) be translated into Lisp. That's why there's `buf2lsp'.
-
-  This will make finishing the report download TODO (elsewhere in this
-  list) easier.
-
-* DONE change `browse-url' var inside doc search
-  CLOSED: [2012-11-30 Fri 15:25]
-  this should use make-buffer-local like the url cookie stuff
-  (moved to `.emacs' instead)
-
-* DONE consider opening Lisp buffers in elisp-mode + view-mode for `q' usage 
-  CLOSED: [2012-11-30 Fri 15:19]
-  Considered, and rejected.
-
-* DONE reimplement buffer names, this time sanely
-  CLOSED: [2012-11-30 Fri 14:43]
-  The names of the converted buffers should inherit from the names of
-  the services/api calls that were used to generate their
-  contents. This will allow the names to propagate outward/upward in a
-  way that's searchable and allows me to gather all of the buffers
-  related to that service/api call together via search.
+* TODO Write a Texinfo manual
