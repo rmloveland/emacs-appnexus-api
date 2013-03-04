@@ -1,9 +1,13 @@
-* Emacs + AppNexus API = Less Typing
+* Emacs + AppNexus API integration = Less Typing
 
-  I don't love typing JSON, especially all the silly double-quotes and the comma placement nonsense. I don't like typing out strings on the commandline, like involved =curl= incantations. I am lazy. Therefore I'm trying to write Elisp instead of JSON, and make calls to the API using keyboard shortcuts.
+  I don't love typing JSON, especially all the silly double-quotes and
+  the commas. I don't like typing out repetitive strings on the
+  command line, like involved =curl= incantations. I am
+  lazy. Therefore I'm trying to write Elisp instead of JSON, and make
+  calls to the API using keyboard shortcuts.
 
-** Required Packages
+  Requires the following built-in packages:
 
-   =cl=
-   =json=
-   =url=
+  - =cl=
+  - =json=
+  - =url=
