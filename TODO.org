@@ -1,9 +1,15 @@
 
+* TODO Do some general refactoring
+
+* TODO Denote internal-only functions
+
+  I like jao's method using `--'. See the Geiser source code for examples.
+
 * TODO Implement a save function
 
   This will save the buffer as its current name, so that (for example)
   a buffer named http://sand.api.appnexus.com/member/meta.el will save
-  under that name.
+  under that name (perhaps with a timestamp?).
 
 * TODO Implement HTTP DELETE calls
 
