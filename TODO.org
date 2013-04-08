@@ -1,3 +1,12 @@
+#+title: TODO
+#+author: Rich Loveland
+#+email: loveland.richard@gmail.com
+
+* TODO Update functions with comments describing their contracts
+
+* TODO Update function docstrings
+
+* TODO Write a commentary in the source code
 
 * TODO Do some general refactoring
 
