@@ -12,6 +12,11 @@
 ;; This code is written by Richard M. Loveland and placed in the
 ;; Public Domain. All warranties are disclaimed.
 
+;;; Commentary:
+;; 
+
+;;; Code:
+
 (require 'cl)
 (require 'json)
 (require 'url)
@@ -45,8 +50,8 @@
   `(:auth
     (:username ,anx-username
 	       :password ,anx-password))
-  "The username and password stored here are used by `anx-authenticate' when you log
-in. Set your credentials using the `anx-get-user-authentication-credentials' command.")
+  "The username and password used by `anx-authenticate'.
+Set your credentials using the `anx-get-user-authentication-credentials' command.")
 
 (defvar *anx-production-url* "http://api.appnexus.com"
   "Production Console API entry point.")
@@ -55,8 +60,8 @@ in. Set your credentials using the `anx-get-user-authentication-credentials' com
   "Sandbox Console API entry point.")
 
 (defvar *anx-current-url* *anx-sandbox-url*
-  "This variable holds the value of the current API entry point. Toggle
-the value of this variable with the `anx-toggle-current-api-url' command.")
+  "This variable holds the value of the current API entry point.
+Toggle the value of this variable with the `anx-toggle-current-api-url' command.")
 
 ;; The variable `url-cookie-trusted-urls' is from the built-in `url'
 ;; package.  We don't want to clobber the global value, so we set a
@@ -67,8 +72,7 @@ the value of this variable with the `anx-toggle-current-api-url' command.")
 ;; Functions
 
 (defun anx-response (buffer)
-  "Converts the JSON response left in BUFFER by `anx-request' into a
-Lisp hash table."
+  "Given a BUFFER, extracts the HTTP response."
   (unwind-protect
       (with-current-buffer buffer
 	(save-excursion
@@ -98,8 +102,7 @@ JSON before attaching it to the request."
 	(concat *anx-current-url* "/" path))))))
 
 (defun anx-extract-meta-fields ()
-  "Given the Lisp response from an API service's `meta' call, create a
-new buffer with just the `fields' list."
+  "Extract the 'fields' variable from the API response."
   (interactive)
   (let* ((it (read (buffer-string)))
 	 (response (let ((json-object-type 'alist))
@@ -110,8 +113,7 @@ new buffer with just the `fields' list."
     (anx-pop-up-buffer bufname fields mode)))
 
 (defun anx-extract-report-meta-fields ()
-  "Given the Lisp response from the Report Service's various
-`meta' calls, create a new buffer with just the right fields."
+  "Extract the 'fields' variable from the reporting API response."
   (interactive)
   (let* ((it (read (buffer-string)))
 	 (response (let ((json-object-type 'alist))
@@ -122,9 +124,10 @@ new buffer with just the `fields' list."
     (anx-pop-up-buffer bufname fields mode)))
 
 (defun anx-authenticate (&optional payload)
-  "Authenticates with the API entry point currently in use and opens the
-response in a new Lisp buffer. Takes an optional Lisp PAYLOAD defining
-your authentication credentials."
+  "Authenticates with the API endpoint currently in use.
+
+Takes an optional Lisp PAYLOAD defining your authentication
+credentials."
   (interactive)
   (anx-pop-up-buffer
    (concat *anx-current-url* "/auth")
@@ -135,8 +138,7 @@ your authentication credentials."
    'js-mode))
 
 (defun anx-pop-up-buffer (bufname stuff mode)
-  "Opens a new buffer BUFNAME and prints STUFF into it, using the Emacs
-MODE of your choice."
+  "Create a BUFNAME with STUFF in it, using your preferred MODE."
   (interactive)
   (let ((buf (generate-new-buffer bufname))
 	(other-frame t))
@@ -158,8 +160,9 @@ MODE of your choice."
   (print stuff buf)))
 
 (defun anx-lisp-to-json ()
-  "Converts the current buffer from Lisp to a string containing escaped JSON.
-This escaped string is preferred by the `json' package. Opens the results in
+  "Convert the current buffer from Lisp to a string containing escaped JSON.
+
+This escaped string is preferred by the 'json' package.  The results open in
 a new buffer."
   (interactive)
   (let ((it (read (buffer-string)))
@@ -168,14 +171,13 @@ a new buffer."
     (anx-pop-up-buffer bufname (json-encode it) mode)))
 
 (defun anx-escape-json ()
-  "Converts the current buffer from raw JSON to a string containing
-escaped JSON, as preferred by the `json' package. Opens the results
-in a new buffer.
+  "Escape the contents of the current buffer for use by the Lisp reader.
 
-This is currently an intermediate step in the conversion from JSON to
-Lisp, which involves invoking the interactive commands `anx-escape-json'
-and `buf2lsp' in sequence. This opens new buffers and performs other
-unnecessary stateful operations, and should be rewritten."
+This is currently an intermediate step in the conversion from
+JSON to Lisp, which involves invoking the interactive commands
+`anx-escape-json' and `buf2lsp' in sequence.  This opens new
+buffers and performs other unnecessary stateful operations, and
+should be rewritten."
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -199,13 +201,13 @@ unnecessary stateful operations, and should be rewritten."
       (replace-match "" nil t))))
 
 (defun anx-unescape-json ()
-  "Converts the current buffer from a string containing escaped JSON into
-raw JSON. Opens the results in a new buffer.
+  "Unescape the contents of the buffer by removing quotes and backslashes.
 
-This is currently an intermediate step in the conversion from Lisp to JSON,
-which involves invoking the commands `anx-lisp-to-json' and `anx-unescape-json' in sequence.
-This opens new buffers and performs other unnecessary stateful operations,
-and should be rewritten."
+This is currently an intermediate step in the conversion from
+Lisp to JSON, which involves invoking the commands
+`anx-lisp-to-json' and `anx-unescape-json' in sequence.  This
+opens new buffers and performs other unnecessary stateful
+operations, and should be rewritten."
   (interactive)
   (save-excursion
     (goto-char (point-min))
@@ -226,12 +228,12 @@ and should be rewritten."
       (replace-match "\\" nil t))))
 
 (defun anx-json-to-lisp ()
-  "Converts the current buffer from a string containing escaped JSON into
-Lisp. Opens the results in a new buffer.
+  "Convert the current buffer's contents from an escaped JSON string into Lisp.
 
-This is currently an intermediate step in the conversion from JSON to Lisp,
-which involves invoking the commands `anx-escape-json' and `anx-json-to-lisp' in sequence.
-This opens new buffers and performs other unnecessary stateful operations,
+This is currently an intermediate step in the conversion from
+JSON to Lisp, which involves invoking the commands
+`anx-escape-json' and `anx-json-to-lisp' in sequence.  This opens
+new buffers and performs other unnecessary stateful operations,
 and should be rewritten."
   (interactive)
   (let ((it (read (buffer-string)))
@@ -240,33 +242,34 @@ and should be rewritten."
     (anx-pop-up-buffer bufname (json-read-from-string it) mode)
     (switch-to-buffer bufname)))
 
-(defun anx-send-buffer (verb service+params)
-  "Sends an HTTP VERB to SERVICE+PARAMS, with the current buffer's
-contents in the header. VERB should be either PUT or POST; for GET
-calls, use `anx-get'.
+(defun anx-send-buffer (verb service-and-params)
+  "Send the current buffer's contents using VERB to SERVICE-AND-PARAMS.
 
-Prompts for SERVICE+PARAMS in the minibuffer. When the call to
-SERVICE+PARAMS returns, the JSON is converted to Lisp and displayed in
-a new buffer.
+VERB is an HTTP command, and should be either 'PUT' or 'POST'; to
+make 'GET' calls use `anx-get'.
 
-Note that you should be in a buffer containing Lisp as understood by
-the `json' package when you invoke this command. The easiest way to
-get to this state is using the `anx-json-to-lisp' command in a sequence like
-the following:
+Prompts for SERVICE-AND-PARAMS in the minibuffer.  When the call
+returns, the JSON is converted to Lisp and displayed in a new
+buffer.
 
-1. From a JSON buffer, invoke the command `anx-json-to-lisp', which will open a
-new buffer containing the Lisp equivalent. Note that this step is
-optional, since you may write your JSON in Lisp directly and skip to
-step 2.
+Note that you should be in a buffer containing Lisp as understood
+by the `json' package when you invoke this command.  The easiest
+way to get to this state is using the `anx-json-to-lisp' command
+in a sequence like the following:
 
-2. Invoke the `anx-send-buffer' command inside the Lisp buffer. The Lisp in
-this buffer will be sent to the API entry point as JSON; you will
-receive a JSON response that is converted to Lisp and opened in (yet
-another) new buffer.
+1. From a JSON buffer, invoke the command `anx-json-to-lisp',
+which will open a new buffer containing the Lisp equivalent.
+Note that this step is optional, since you may write your JSON in
+Lisp directly and skip to step 2.
 
-This workflow is likely to be redesigned in the future, as there are
-many inefficiencies that can be removed; it was never actually
-designed in the first place, but grown."
+2. Invoke the `anx-send-buffer' command inside the Lisp buffer.
+The Lisp in this buffer will be sent to the API entry point as
+JSON; you will receive a JSON response that is converted to Lisp
+and opened in (yet another) new buffer.
+
+This workflow is likely to be redesigned in the future, as there
+are many inefficiencies that can be removed; it was never
+actually designed in the first place, but grown."
   (interactive "sverb: \nsservice+params: ")
   (let ((payload (read (buffer-string))))
     (anx-pop-up-buffer
@@ -276,9 +279,11 @@ designed in the first place, but grown."
 		 payload)
      'js-mode)))
 
-(defun anx-get (service+params)
-  "Sends a GET request to SERVICE+PARAMS. Prompts for SERVICE+PARAMS
-in the minibuffer. Opens the response in a new Lisp buffer."
+(defun anx-get (service-and-params)
+  "Send a 'GET' request to SERVICE-AND-PARAMS.
+
+Prompts for SERVICE-AND-PARAMS in the minibuffer and opens the
+response in a new Lisp buffer."
   (interactive "sservice+params: ")
   (anx-pop-up-buffer (concat *anx-current-url* "/" service+params)
 	     (anx-request "GET"
@@ -286,8 +291,9 @@ in the minibuffer. Opens the response in a new Lisp buffer."
 	     'js-mode))
 
 (defun anx-switch-users (user-id)
-  "Switches to the API user denoted by USER-ID. Opens the response in
-a new Lisp buffer."
+  "Switch to the user denoted by USER-ID.
+
+Opens the response in a new buffer."
   (interactive "suser-id: ")
   (anx-pop-up-buffer "*anx-switch-users*"
 	     (anx-request "POST"
@@ -296,8 +302,9 @@ a new Lisp buffer."
 	     'js-mode))
 
 (defun anx-who-am-i ()
-  "Displays what user you are currently operating as. Opens the
-response in a new Lisp buffer."
+  "Ask the API which user you're operating as.
+
+Opens the response in a new buffer."
   (interactive)
   (anx-pop-up-buffer "*anx-who-am-i*"
 		   (anx-request
@@ -306,12 +313,13 @@ response in a new Lisp buffer."
 		   'js-mode))
 
 (defun anx-browse-api-docs ()
-  "Searches the API documentation for the symbol at point. Opens the
-results in a web browser.
+  "Search the AppNexus Console API documentation for the symbol at point.
 
-Note that this function is currently only working on Mac OS X, and
-should be rewritten ASAP. Please contact rloveland@appnexus.com and
-nag him about it."
+Opens the results in a web browser.
+
+Note: This function is currently only working on Mac OS X, and
+should be rewritten ASAP.  Please contact rloveland@appnexus.com
+and nag him about it."
   (interactive)
   (let ((browse-url-generic-program "open"))
     (browse-url-generic
@@ -321,8 +329,10 @@ nag him about it."
 	     (symbol-name (symbol-at-point))))))
 
 (defun anx-get-user-authentication-credentials (username)
-  "Prompts for your API username and password. You can also set them
-by typing `M-x customize-group RET appnexus'."
+  "Prompt for an API USERNAME (and password).
+
+You can also set your login credentials using
+`customize-group'.  The group name is 'appnexus'."
   (interactive "susername: ")
   (setq anx-username username)
   (setq anx-password (read-passwd "password: ")))
@@ -333,7 +343,7 @@ by typing `M-x customize-group RET appnexus'."
   (message "current api url is %s" *anx-current-url*))
 
 (defun anx-toggle-current-api-url ()
-  "Switches between ``sand'' and ``prod'' Console APIs."
+  "Switch between 'sand' and 'prod' Console APIs."
   (interactive)
   (if (string-equal *anx-current-url* *anx-sandbox-url*)
       (setq *anx-current-url* *anx-production-url*)
@@ -365,3 +375,7 @@ by typing `M-x customize-group RET appnexus'."
 (provide 'appnexus)
 
 ;;; appnexus.el ends here.
+
+(provide 'appnexus)
+
+;;; appnexus.el ends here
