@@ -73,18 +73,19 @@ Toggle the value of this variable with the `anx-toggle-current-api-url' command.
 
 ;; Functions
 
-(defun anx-response (buffer)
-  "Given a BUFFER, extracts the HTTP response."
+(defun anx--parse-response (buffer)
+  "Given a BUFFER with an HTTP response, extracts the JSON payload.
+Converts it to Lisp and returns it."
   (unwind-protect
       (with-current-buffer buffer
 	(save-excursion
 	  (goto-char url-http-end-of-headers)
 	  (let ((json-key-type 'hash-table)
-		(response (buffer-substring (point) (point-max))))
+		(response (json-read-from-string (buffer-substring (point) (point-max)))))
 	    response)))))
 
-(defun anx-request (verb path &optional payload)
-  "Sends an HTTP VERB to the API service at PATH with an optional PAYLOAD.
+(defun anx--send-request (verb path &optional payload)
+  "Talk HTTP VERB to the API service at PATH with an optional PAYLOAD.
 If PAYLOAD exists, it will be a Lisp data structure that is converted into
 JSON before attaching it to the request."
   (if payload
@@ -93,13 +94,13 @@ JSON before attaching it to the request."
 	     '(("Content-Type" . "application/x-www-form-urlencoded")))
 	    (url-request-data
 	     (json-encode payload)))
-	(anx-response
+	(anx--parse-response
 	 (url-retrieve-synchronously
 	  (concat *anx-current-url* "/" path))))
     (let ((url-request-method verb)
 	  (url-request-extra-headers
 	   '(("Content-Type" . "application/x-www-form-urlencoded"))))
-      (anx-response
+      (anx--parse-response
        (url-retrieve-synchronously
 	(concat *anx-current-url* "/" path))))))
 
@@ -133,7 +134,7 @@ credentials."
   (interactive)
   (anx-pop-up-buffer
    (concat *anx-current-url* "/auth")
-   (anx-request "POST"
+   (anx--send-request "POST"
 	       "auth"
 	       (or payload
 		   `(:auth (:username ,anx-username :password ,anx-password))))
@@ -276,7 +277,7 @@ actually designed in the first place, but grown."
   (let ((payload (read (buffer-string))))
     (anx-pop-up-buffer
      (concat *anx-current-url* "/" service+params "[" verb "]")
-     (anx-request verb
+     (anx--send-request verb
 		 service+params
 		 payload)
      'js-mode)))
@@ -288,7 +289,7 @@ Prompts for SERVICE-AND-PARAMS in the minibuffer and opens the
 response in a new Lisp buffer."
   (interactive "sservice+params: ")
   (anx-pop-up-buffer (concat *anx-current-url* "/" service+params)
-	     (anx-request "GET"
+	     (anx--send-request "GET"
 			 service+params)
 	     'js-mode))
 
@@ -298,7 +299,7 @@ response in a new Lisp buffer."
 Opens the response in a new buffer."
   (interactive "suser-id: ")
   (anx-pop-up-buffer "*anx-switch-users*"
-	     (anx-request "POST"
+	     (anx--send-request "POST"
 			 "auth"
 			 `(:auth (:switch_to_user ,user-id)))
 	     'js-mode))
@@ -309,7 +310,7 @@ Opens the response in a new buffer."
 Opens the response in a new buffer."
   (interactive)
   (anx-pop-up-buffer "*anx-who-am-i*"
-		   (anx-request
+		   (anx--send-request
 		    "GET"
 		    "user?current")
 		   'js-mode))
