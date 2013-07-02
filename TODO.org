@@ -6,8 +6,6 @@
 
 * TODO Update function docstrings
 
-* TODO Write a commentary in the source code
-
 * TODO Do some general refactoring
 
 * TODO Denote internal-only functions
@@ -27,3 +25,5 @@
   Automate this multi-step process...
 
 * TODO Write a Texinfo manual
+
+* DONE Write a commentary in the source code
