@@ -115,7 +115,7 @@ JSON before attaching it to the request."
 	 (fields (cdr (assoc 'fields response)))
 	 (bufname (concat (buffer-name) " (META FIELDS ONLY)"))
 	(mode 'emacs-lisp-mode))
-    (anx-pop-up-buffer bufname fields mode)))
+    (anx--pop-up-buffer bufname fields mode)))
 
 (defun anx-extract-report-meta-fields ()
   "Extract the 'fields' variable from the reporting API response."
@@ -126,12 +126,12 @@ JSON before attaching it to the request."
 	 (fields (cdr (assoc 'meta response)))
 	 (bufname (concat (buffer-name) " (REPORT META FIELDS ONLY)"))
 	(mode 'emacs-lisp-mode))
-    (anx-pop-up-buffer bufname fields mode)))
+    (anx--pop-up-buffer bufname fields mode)))
 
 (defun anx-authenticate ()
   "Authenticate with the current API endpoint."
   (interactive)
-  (anx-pop-up-buffer
+  (anx--pop-up-buffer
    (concat *anx-current-url* "/auth")
    (anx--send-request "POST"
 		      "auth"
@@ -141,9 +141,8 @@ JSON before attaching it to the request."
 			       ,anx-password)))
    'js-mode))
 
-(defun anx-pop-up-buffer (bufname stuff mode)
+(defun anx--pop-up-buffer (bufname stuff mode)
   "Create a BUFNAME with STUFF in it, using your preferred MODE."
-  (interactive)
   (let ((buf (generate-new-buffer bufname))
 	(other-frame t))
     ;; setting mode is done before showing the new frame
@@ -151,12 +150,7 @@ JSON before attaching it to the request."
     (set-buffer buf)
     (funcall mode)
   (if other-frame
-      (switch-to-buffer-other-window buf)
-    (let ((one-buffer-one-frame-force one-buffer-one-frame-mode))
-      ;; change window in case its unsuitable (dedicated or special display)
-      (select-window (get-window-for-other-buffer))
-      ;; force new frame
-      (switch-to-buffer buf)))
+      (switch-to-buffer-other-window buf))
   (setq buffer-offer-save t)
   (put 'buffer-offer-save 'permanent-local t)
   (set-buffer-modified-p nil)
@@ -172,7 +166,7 @@ a new buffer."
   (let ((it (read (buffer-string)))
 	(bufname (concat (buffer-name) ".json"))
 	(mode 'js-mode))
-    (anx-pop-up-buffer bufname (json-encode it) mode)))
+    (anx--pop-up-buffer bufname (json-encode it) mode)))
 
 (defun anx-escape-json ()
   "Escape the contents of the current buffer for use by the Lisp reader.
@@ -243,7 +237,7 @@ and should be rewritten."
   (let ((it (read (buffer-string)))
 	(bufname (concat (buffer-name) ".el"))
 	(mode 'emacs-lisp-mode))
-    (anx-pop-up-buffer bufname (json-read-from-string it) mode)
+    (anx--pop-up-buffer bufname (json-read-from-string it) mode)
     (switch-to-buffer bufname)))
 
 (defun anx-send-buffer (verb service-and-params)
@@ -276,7 +270,7 @@ are many inefficiencies that can be removed; it was never
 actually designed in the first place, but grown."
   (interactive "sverb: \nsservice+params: ")
   (let ((payload (read (buffer-string))))
-    (anx-pop-up-buffer
+    (anx--pop-up-buffer
      (concat *anx-current-url* "/" service+params "[" verb "]")
      (anx--send-request verb
 		 service+params
@@ -289,7 +283,7 @@ actually designed in the first place, but grown."
 Prompts for SERVICE-AND-PARAMS in the minibuffer and opens the
 response in a new Lisp buffer."
   (interactive "sservice+params: ")
-  (anx-pop-up-buffer (concat *anx-current-url* "/" service+params)
+  (anx--pop-up-buffer (concat *anx-current-url* "/" service+params)
 	     (anx--send-request "GET"
 			 service+params)
 	     'js-mode))
@@ -299,7 +293,7 @@ response in a new Lisp buffer."
 
 Opens the response in a new buffer."
   (interactive "suser-id: ")
-  (anx-pop-up-buffer "*anx-switch-users*"
+  (anx--pop-up-buffer "*anx-switch-users*"
 	     (anx--send-request "POST"
 			 "auth"
 			 `(:auth (:switch_to_user ,user-id)))
@@ -310,7 +304,7 @@ Opens the response in a new buffer."
 
 Opens the response in a new buffer."
   (interactive)
-  (anx-pop-up-buffer "*anx-who-am-i*"
+  (anx--pop-up-buffer "*anx-who-am-i*"
 		   (anx--send-request
 		    "GET"
 		    "user?current")
