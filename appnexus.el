@@ -1,37 +1,38 @@
-;;; appnexus.el --- Make calls to the AppNexus API with
-;;; keychords. Write Elisp instead of JSON.
-
+;;; appnexus.el --- Interact with the AppNexus API from Emacs.
 
 ;; Copyright (C) 2013 Rich Loveland
 
 ;; Author: Rich Loveland
 ;; Version: 0.1
-;; Keywords: convenience, JSON, REST, API
+;; Keywords: Convenience, JSON, REST, API, AppNexus
 
 ;; This file is NOT part of GNU Emacs.
 
 ;; This code is written by Richard M. Loveland and placed in the
 ;; Public Domain. All warranties are disclaimed.
 
-;;; Commentary:
-;; 
+;;; Commentary: 
+
+;; Provides a number of functions for interacting with the AppNexus
+;; API from Emacs. These functions are bound to key chords for
+;; convenience and speed of access.
+
+;; To get started, call `M-x anx-get-user-authentication-credentials',
+;; bound to `C-x C-a a'. See the `Keybindings' section below for a
+;; complete list of functions and their keys.
 
 ;;; Code:
 
-(require 'cl)
+(eval-when-compile (require 'cl))
 (require 'json)
 (require 'url)
 
 ;; Group and customization information
 
 (defgroup appnexus nil
-  "Functions that allow for easy interaction with AppNexus APIs."
+  "Convenient interaction with AppNexus APIs from Emacs."
   :group 'processes
   :prefix "anx-"
-  :link '(url-link :tag "Appnexus Console API entry point."
-		   "http://api.appnexus.com")
-  :link '(url-link :tag "Appnexus sandbox Console API entry point."
-		   "http://sand.api.appnexus.com")
   :link '(url-link :tag "Appnexus Console API documentation."
 		   "https://wiki.appnexus.com/display/api/home"))
 
@@ -352,26 +353,26 @@ You can also set your login credentials using
 
 ;; Keybindings
 
-(global-set-key (kbd "C-x C-A A") 'anx-authenticate)
-(global-set-key (kbd "C-x C-A a") 'anx-get-user-authentication-credentials)
-(global-set-key (kbd "C-x C-A S") 'anx-switch-users)
+(global-set-key (kbd "C-x C-a A") 'anx-authenticate)
+(global-set-key (kbd "C-x C-a a") 'anx-get-user-authentication-credentials)
+(global-set-key (kbd "C-x C-a S") 'anx-switch-users)
 
-(global-set-key (kbd "C-x C-A W") 'anx-who-am-i)
-(global-set-key (kbd "C-x C-A w") 'anx-display-current-api-url)
-(global-set-key (kbd "C-x C-A T") 'anx-toggle-current-api-url)
+(global-set-key (kbd "C-x C-a W") 'anx-who-am-i)
+(global-set-key (kbd "C-x C-a w") 'anx-display-current-api-url)
+(global-set-key (kbd "C-x C-a T") 'anx-toggle-current-api-url)
 
-(global-set-key (kbd "C-x C-A J") 'anx-lisp-to-json)
-(global-set-key (kbd "C-x C-A L") 'anx-json-to-lisp)
-(global-set-key (kbd "C-x C-A M") 'anx-extract-meta-fields)
-(global-set-key (kbd "C-x C-A R") 'anx-extract-report-meta-fields)
+(global-set-key (kbd "C-x C-a J") 'anx-lisp-to-json)
+(global-set-key (kbd "C-x C-a L") 'anx-json-to-lisp)
+(global-set-key (kbd "C-x C-a M") 'anx-extract-meta-fields)
+(global-set-key (kbd "C-x C-a R") 'anx-extract-report-meta-fields)
 
-(global-set-key (kbd "C-x C-A P") 'anx-send-buffer)
-(global-set-key (kbd "C-x C-A G") 'anx-get)
+(global-set-key (kbd "C-x C-a P") 'anx-send-buffer)
+(global-set-key (kbd "C-x C-a G") 'anx-get)
 
-(global-set-key (kbd "C-x C-A U") 'anx-unescape-json)
-(global-set-key (kbd "C-x C-A E") 'anx-escape-json)
+(global-set-key (kbd "C-x C-a U") 'anx-unescape-json)
+(global-set-key (kbd "C-x C-a E") 'anx-escape-json)
 
-(global-set-key (kbd "C-x C-A D") 'anx-browse-api-docs)
+(global-set-key (kbd "C-x C-a D") 'anx-browse-api-docs)
 
 (provide 'appnexus)
 
