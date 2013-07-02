@@ -1,6 +1,7 @@
 ;;; appnexus.el --- Make calls to the AppNexus API with
 ;;; keychords. Write Elisp instead of JSON.
 
+
 ;; Copyright (C) 2013 Rich Loveland
 
 ;; Author: Rich Loveland
@@ -371,10 +372,6 @@ You can also set your login credentials using
 (global-set-key (kbd "C-x C-A E") 'anx-escape-json)
 
 (global-set-key (kbd "C-x C-A D") 'anx-browse-api-docs)
-
-(provide 'appnexus)
-
-;;; appnexus.el ends here.
 
 (provide 'appnexus)
 
