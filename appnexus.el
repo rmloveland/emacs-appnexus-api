@@ -126,18 +126,17 @@ JSON before attaching it to the request."
 	(mode 'emacs-lisp-mode))
     (anx-pop-up-buffer bufname fields mode)))
 
-(defun anx-authenticate (&optional payload)
-  "Authenticates with the API endpoint currently in use.
-
-Takes an optional Lisp PAYLOAD defining your authentication
-credentials."
+(defun anx-authenticate ()
+  "Authenticate with the current API endpoint."
   (interactive)
   (anx-pop-up-buffer
    (concat *anx-current-url* "/auth")
    (anx--send-request "POST"
-	       "auth"
-	       (or payload
-		   `(:auth (:username ,anx-username :password ,anx-password))))
+		      "auth"
+		      `(:auth (:username
+			       ,anx-username
+			       :password
+			       ,anx-password)))
    'js-mode))
 
 (defun anx-pop-up-buffer (bufname stuff mode)
