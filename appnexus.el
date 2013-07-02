@@ -79,10 +79,12 @@ Converts it to Lisp and returns it."
   (unwind-protect
       (with-current-buffer buffer
 	(save-excursion
-	  (goto-char url-http-end-of-headers)
-	  (let ((json-key-type 'hash-table)
-		(response (json-read-from-string (buffer-substring (point) (point-max)))))
-	    response)))))
+	  (if (boundp 'url-http-end-of-headers)
+	      (progn 
+		(goto-char url-http-end-of-headers)
+		(let ((json-key-type 'hash-table)
+		      (response (json-read-from-string (buffer-substring (point) (point-max)))))
+		  response)))))))
 
 (defun anx--send-request (verb path &optional payload)
   "Talk HTTP VERB to the API service at PATH with an optional PAYLOAD.
