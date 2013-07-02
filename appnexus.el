@@ -271,9 +271,9 @@ actually designed in the first place, but grown."
   (interactive "sverb: \nsservice+params: ")
   (let ((payload (read (buffer-string))))
     (anx--pop-up-buffer
-     (concat *anx-current-url* "/" service+params "[" verb "]")
+     (concat *anx-current-url* "/" service-and-params "[" verb "]")
      (anx--send-request verb
-		 service+params
+		 service-and-params
 		 payload)
      'js-mode)))
 
@@ -283,9 +283,9 @@ actually designed in the first place, but grown."
 Prompts for SERVICE-AND-PARAMS in the minibuffer and opens the
 response in a new Lisp buffer."
   (interactive "sservice+params: ")
-  (anx--pop-up-buffer (concat *anx-current-url* "/" service+params)
+  (anx--pop-up-buffer (concat *anx-current-url* "/" service-and-params)
 	     (anx--send-request "GET"
-			 service+params)
+			 service-and-params)
 	     'js-mode))
 
 (defun anx-switch-users (user-id)
