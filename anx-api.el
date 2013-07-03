@@ -284,19 +284,13 @@ Opens the response in a new buffer."
 
 (defun anx-browse-api-docs ()
   "Search the AppNexus Console API documentation for the symbol at point.
-
-Opens the results in a web browser.
-
-Note: This function is currently only working on Mac OS X, and
-should be rewritten ASAP.  Please contact rloveland@appnexus.com
-and nag him about it."
+Opens the results in whatever web browser is preferred by `browse-url'."
   (interactive)
-  (let ((browse-url-generic-program "open"))
-    (browse-url-generic
-     (concat "https://wiki.appnexus.com/dosearchsite.action?"
-	     "searchQuery.spaceKey=api"
-	     "&searchQuery.queryString=ancestorIds%3A27984339+AND+"
-	     (symbol-name (symbol-at-point))))))
+  (browse-url
+   (concat "https://wiki.appnexus.com/dosearchsite.action?"
+	   "searchQuery.spaceKey=api"
+	   "&searchQuery.queryString=ancestorIds%3A27984339+AND+"
+	   (symbol-name (symbol-at-point)))))
 
 (defun anx-get-user-authentication-credentials (username)
   "Prompt for an API USERNAME (and password).
