@@ -100,27 +100,21 @@ JSON before attaching it to the request."
 	 (url-retrieve-synchronously
 	  (concat *anx-current-url* "/" path))))))
 
-(defun anx-extract-meta-fields ()
-  "Extract the 'fields' variable from the API response."
-  (interactive)
-  (let* ((it (read (buffer-string)))
-	 (response (let ((json-object-type 'alist))
-		     (assoc 'response it)))
-	 (fields (cdr (assoc 'fields response)))
-	 (bufname (concat (buffer-name) " (META FIELDS ONLY)"))
-	(mode 'emacs-lisp-mode))
-    (anx--pop-up-buffer bufname fields mode)))
-
-(defun anx-extract-report-meta-fields ()
-  "Extract the 'fields' variable from the reporting API response."
-  (interactive)
-  (let* ((it (read (buffer-string)))
-	 (response (let ((json-object-type 'alist))
-		     (assoc 'response it)))
-	 (fields (cdr (assoc 'meta response)))
-	 (bufname (concat (buffer-name) " (REPORT META FIELDS ONLY)"))
-	(mode 'emacs-lisp-mode))
-    (anx--pop-up-buffer bufname fields mode)))
+(defun anx--pop-up-buffer (bufname stuff mode)
+  "Create a BUFNAME with STUFF in it, using your preferred MODE."
+  (let ((buf (generate-new-buffer bufname))
+	(other-frame t))
+    ;; setting mode is done before showing the new frame
+    ;; because otherwise, we get a nasty animation effect
+    (set-buffer buf)
+    (funcall mode)
+    (if other-frame
+	(switch-to-buffer-other-window buf))
+    (setq buffer-offer-save t)
+    (put 'buffer-offer-save 'permanent-local t)
+    (set-buffer-modified-p nil)
+    (goto-char (point-min))
+    (print stuff buf)))
 
 (defun anx-authenticate ()
   "Authenticate with the current API endpoint."
@@ -134,22 +128,6 @@ JSON before attaching it to the request."
 			       :password
 			       ,anx-password)))
    'js-mode))
-
-(defun anx--pop-up-buffer (bufname stuff mode)
-  "Create a BUFNAME with STUFF in it, using your preferred MODE."
-  (let ((buf (generate-new-buffer bufname))
-	(other-frame t))
-    ;; setting mode is done before showing the new frame
-    ;; because otherwise, we get a nasty animation effect
-    (set-buffer buf)
-    (funcall mode)
-  (if other-frame
-      (switch-to-buffer-other-window buf))
-  (setq buffer-offer-save t)
-  (put 'buffer-offer-save 'permanent-local t)
-  (set-buffer-modified-p nil)
-  (goto-char (point-min))
-  (print stuff buf)))
 
 (defun anx-lisp-to-json ()
   "Convert the current buffer from Lisp to a string containing escaped JSON.
@@ -353,8 +331,6 @@ You can also set your login credentials using
 
 (global-set-key (kbd "C-x C-a J") 'anx-lisp-to-json)
 (global-set-key (kbd "C-x C-a L") 'anx-json-to-lisp)
-(global-set-key (kbd "C-x C-a M") 'anx-extract-meta-fields)
-(global-set-key (kbd "C-x C-a R") 'anx-extract-report-meta-fields)
 
 (global-set-key (kbd "C-x C-a P") 'anx-send-buffer)
 (global-set-key (kbd "C-x C-a G") 'anx-get)
