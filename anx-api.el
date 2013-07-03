@@ -1,4 +1,4 @@
-;;; appnexus.el --- Interact with the AppNexus API from Emacs.
+;;; anx-api.el --- Interact with the AppNexus API from Emacs.
 
 ;; Copyright (C) 2013 Rich Loveland
 
@@ -11,14 +11,14 @@
 ;; This code is written by Richard M. Loveland and placed in the
 ;; Public Domain. All warranties are disclaimed.
 
-;;; Commentary: 
+;;; Commentary:
 
 ;; Provides a number of functions for interacting with the AppNexus
-;; API from Emacs. These functions are bound to key chords for
+;; API from Emacs.  These functions are bound to key chords for
 ;; convenience and speed of access.
 
 ;; To get started, call `M-x anx-get-user-authentication-credentials',
-;; bound to `C-x C-a a'. See the `Keybindings' section below for a
+;; bound to `C-x C-a a'.  See the `Keybindings' section below for a
 ;; complete list of functions and their keys.
 
 ;;; Code:
@@ -29,7 +29,7 @@
 
 ;; Group and customization information
 
-(defgroup appnexus nil
+(defgroup anx nil
   "Convenient interaction with AppNexus APIs from Emacs."
   :group 'processes
   :prefix "anx-"
@@ -38,12 +38,12 @@
 
 (defcustom anx-username nil
   "Appnexus API username."
-  :group 'appnexus
+  :group 'anx
   :type '(string))
 
 (defcustom anx-password nil
   "Appnexus API password."
-  :group 'appnexus
+  :group 'anx
   :type '(string))
 
 ;; Variables
@@ -80,7 +80,7 @@ Converts it to Lisp and returns it."
       (with-current-buffer buffer
 	(save-excursion
 	  (if (boundp 'url-http-end-of-headers)
-	      (progn 
+	      (progn
 		(goto-char url-http-end-of-headers)
 		(let ((json-key-type 'hash-table)
 		      (response (json-read-from-string (buffer-substring (point) (point-max)))))
@@ -302,7 +302,7 @@ and nag him about it."
   "Prompt for an API USERNAME (and password).
 
 You can also set your login credentials using
-`customize-group'.  The group name is 'appnexus'."
+`customize-group'.  The group name is 'anx'."
   (interactive "susername: ")
   (setq anx-username username)
   (setq anx-password (read-passwd "password: ")))
@@ -340,6 +340,6 @@ You can also set your login credentials using
 
 (global-set-key (kbd "C-x C-a D") 'anx-browse-api-docs)
 
-(provide 'appnexus)
+(provide 'anx-api)
 
-;;; appnexus.el ends here
+;;; anx-api.el ends here
