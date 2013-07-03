@@ -8,10 +8,6 @@
 
 * TODO Do some general refactoring
 
-* TODO Denote internal-only functions
-
-  I like jao's method using `--'. See the Geiser source code for examples.
-
 * TODO Implement a save function
 
   This will save the buffer as its current name, so that (for example)
@@ -25,5 +21,9 @@
   Automate this multi-step process...
 
 * TODO Write a Texinfo manual
+
+* DONE Denote internal-only functions
+
+  I like jao's method using `--'. See the Geiser source code for examples.
 
 * DONE Write a commentary in the source code
