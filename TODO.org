@@ -2,11 +2,13 @@
 #+author: Rich Loveland
 #+email: loveland.richard@gmail.com
 
+* TODO Write CLOS/EIEIO accessors for API response objects
+
+  This applies to `anx-docgen' as well.
+
 * TODO Update functions with comments describing their contracts
 
 * TODO Update function docstrings
-
-* TODO Do some general refactoring
 
 * TODO Implement a save function
 
@@ -21,6 +23,8 @@
   Automate this multi-step process...
 
 * TODO Write a Texinfo manual
+
+* DONE Do some general refactoring
 
 * DONE Denote internal-only functions
 
