@@ -87,24 +87,18 @@ Converts it to Lisp and returns it."
 		  response)))))))
 
 (defun anx--send-request (verb path &optional payload)
-  "Talk HTTP VERB to the API service at PATH with an optional PAYLOAD.
-If PAYLOAD exists, it will be a Lisp data structure that is converted into
+  "HTTP VERB the service at PATH with an optional PAYLOAD.
+If PAYLOAD is , it will be a Lisp data structure that is converted into
 JSON before attaching it to the request."
-  (if payload
+  (let ((maybe-payload (if payload payload "")))
       (let ((url-request-method verb)
 	    (url-request-extra-headers
 	     '(("Content-Type" . "application/x-www-form-urlencoded")))
 	    (url-request-data
-	     (json-encode payload)))
+	     (json-encode maybe-payload)))
 	(anx--parse-response
 	 (url-retrieve-synchronously
-	  (concat *anx-current-url* "/" path))))
-    (let ((url-request-method verb)
-	  (url-request-extra-headers
-	   '(("Content-Type" . "application/x-www-form-urlencoded"))))
-      (anx--parse-response
-       (url-retrieve-synchronously
-	(concat *anx-current-url* "/" path))))))
+	  (concat *anx-current-url* "/" path))))))
 
 (defun anx-extract-meta-fields ()
   "Extract the 'fields' variable from the API response."
