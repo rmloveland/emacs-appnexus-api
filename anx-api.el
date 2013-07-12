@@ -127,7 +127,7 @@ JSON before attaching it to the request."
 			       ,anx-username
 			       :password
 			       ,anx-password)))
-   'js-mode))
+   'emacs-lisp-mode))
 
 (defun anx-lisp-to-json ()
   "Convert the current buffer from Lisp to a string containing escaped JSON.
@@ -247,7 +247,7 @@ actually designed in the first place, but grown."
      (anx--send-request verb
 		 service-and-params
 		 payload)
-     'js-mode)))
+     'emacs-lisp-mode)))
 
 (defun anx-get (service-and-params)
   "Send a 'GET' request to SERVICE-AND-PARAMS.
@@ -258,7 +258,7 @@ response in a new Lisp buffer."
   (anx--pop-up-buffer (concat *anx-current-url* "/" service-and-params)
 	     (anx--send-request "GET"
 			 service-and-params)
-	     'js-mode))
+	     'emacs-lisp-mode))
 
 (defun anx-switch-users (user-id)
   "Switch to the user denoted by USER-ID.
@@ -269,7 +269,7 @@ Opens the response in a new buffer."
 	     (anx--send-request "POST"
 			 "auth"
 			 `(:auth (:switch_to_user ,user-id)))
-	     'js-mode))
+	     'emacs-lisp-mode))
 
 (defun anx-who-am-i ()
   "Ask the API which user you're operating as.
@@ -280,7 +280,7 @@ Opens the response in a new buffer."
 		   (anx--send-request
 		    "GET"
 		    "user?current")
-		   'js-mode))
+		   'emacs-lisp-mode))
 
 (defun anx-browse-api-docs ()
   "Search the AppNexus Console API documentation for the symbol at point.
