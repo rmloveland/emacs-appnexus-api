@@ -46,6 +46,26 @@
   :group 'anx
   :type '(string))
 
+;;------------------------------------------------------------------
+;; FIXME: Incorporate this into the code:
+(defvar *anx-buffer-save-dir* nil)
+
+(setq *anx-buffer-save-dir* "/Users/rloveland/work/code/api/elisp/")
+
+(defun anx-save-buffer-contents ()
+  (interactive)
+  (write-file
+   (expand-file-name
+    (concat *anx-buffer-save-dir*
+	    (replace-regexp-in-string "/" "_"
+				      (buffer-name))
+	    "_"
+	    (replace-regexp-in-string " " "_"
+				      (current-time-string))))))
+
+(global-set-key (kbd "C-x C-a s") 'anx-save-buffer-contents)
+;;------------------------------------------------------------------
+
 ;; Variables
 
 (defvar *anx-authentication-credentials*
@@ -260,6 +280,17 @@ response in a new Lisp buffer."
 			 service-and-params)
 	     'emacs-lisp-mode))
 
+(defun anx-delete (service-and-params)
+  "Send a 'DELETE' request to SERVICE-AND-PARAMS.
+
+Prompts for SERVICE-AND-PARAMS in the minibuffer and opens the
+response in a new Lisp buffer."
+  (interactive "sservice+params: ")
+  (anx--pop-up-buffer (concat *anx-current-url* "/" service-and-params)
+	     (anx--send-request "DELETE"
+			 service-and-params)
+	     'emacs-lisp-mode))
+
 (defun anx-switch-users (user-id)
   "Switch to the user denoted by USER-ID.
 
@@ -328,11 +359,12 @@ You can also set your login credentials using
 
 (global-set-key (kbd "C-x C-a P") 'anx-send-buffer)
 (global-set-key (kbd "C-x C-a G") 'anx-get)
+(global-set-key (kbd "C-x C-a D") 'anx-delete)
 
 (global-set-key (kbd "C-x C-a U") 'anx-unescape-json)
 (global-set-key (kbd "C-x C-a E") 'anx-escape-json)
 
-(global-set-key (kbd "C-x C-a D") 'anx-browse-api-docs)
+(global-set-key (kbd "C-x C-a d") 'anx-browse-api-docs)
 
 (provide 'anx-api)
 
