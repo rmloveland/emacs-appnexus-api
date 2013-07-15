@@ -2,6 +2,17 @@
 #+author: Rich Loveland
 #+email: loveland.richard@gmail.com
 
+* TODO Figure out how to log current user for future use
+
+  In order to do this we'll have to keep track of the current user
+  somehow. Perhaps in the buffer name?
+
+* TODO Merge together P{UT,OST} calls with payloads for file saves?
+
+* TODO Fix buffer names of `who-am-i' and friends that aren't updated yet
+
+* TODO Store past values of `path-and-params' for smart completion
+
 * TODO Write CLOS/EIEIO accessors for API response objects
 
   This applies to `anx-docgen' as well.
@@ -16,13 +27,15 @@
   a buffer named http://sand.api.appnexus.com/member/meta.el will save
   under that name (perhaps with a timestamp?).
 
-* TODO Implement HTTP DELETE calls
-
 * TODO Reporting download
 
   Automate this multi-step process...
 
+* TODO Abstract HTTP calls in a macro
+
 * TODO Write a Texinfo manual
+
+* DONE Implement HTTP DELETE calls
 
 * DONE Do some general refactoring
 
