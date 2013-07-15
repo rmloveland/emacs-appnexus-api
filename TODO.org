@@ -2,6 +2,10 @@
 #+author: Rich Loveland
 #+email: loveland.richard@gmail.com
 
+* TODO Make showing HTTP response headers toggle-able
+
+  See if there's a way to stash them in a buffer-local variable.
+
 * TODO Figure out how to log current user for future use
 
   In order to do this we'll have to keep track of the current user
