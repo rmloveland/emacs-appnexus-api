@@ -103,22 +103,23 @@ Converts it to Lisp and returns it."
 	      (progn
 		(goto-char url-http-end-of-headers)
 		(let ((json-key-type 'hash-table)
-		      (response (json-read-from-string (buffer-substring (point) (point-max)))))
+		      (response (json-read)))
 		  response)))))))
 
 (defun anx--send-request (verb path &optional payload)
   "HTTP VERB the service at PATH with an optional PAYLOAD.
 If PAYLOAD is , it will be a Lisp data structure that is converted into
 JSON before attaching it to the request."
-  (let ((maybe-payload (if payload payload "")))
-      (let ((url-request-method verb)
-	    (url-request-extra-headers
-	     '(("Content-Type" . "application/x-www-form-urlencoded")))
-	    (url-request-data
-	     (json-encode maybe-payload)))
-	(anx--parse-response
-	 (url-retrieve-synchronously
-	  (concat *anx-current-url* "/" path))))))
+  (let ((url-request-method verb)
+	(url-request-extra-headers
+	 '(("Content-Type" . "application/x-www-form-urlencoded")))
+	(url-request-data
+	 (if payload
+	     (json-encode payload)
+	   "")))
+      (anx--parse-response
+       (url-retrieve-synchronously
+	(concat *anx-current-url* "/" path)))))
 
 (defun anx--pop-up-buffer (bufname stuff mode)
   "Create a BUFNAME with STUFF in it, using your preferred MODE."
