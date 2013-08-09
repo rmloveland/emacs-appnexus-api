@@ -281,6 +281,27 @@ response in a new Lisp buffer."
 			 service-and-params)
 	     'emacs-lisp-mode))
 
+;; Generic GET request -- this should probably live somewhere else
+;; eventually, when this code grows up and gets refactored properly...
+
+(defun rml/get (url)
+  "Send a 'GET' request to URL.
+
+Prompts for URL in the minibuffer and opens the
+response in a new buffer."
+  (interactive "sURL: ")
+  (let ((url-request-method "GET")
+	(url-request-extra-headers
+	 '(("Content-Type" . "application/x-www-form-urlencoded")))
+	(response-buf (url-retrieve-synchronously url)))
+    (anx--pop-up-buffer url
+			(unwind-protect
+			    (with-current-buffer response-buf
+			      (save-excursion
+				(let ((response (buffer-string)))
+				  response))))
+			'fundamental-mode)))
+
 (defun anx-delete (service-and-params)
   "Send a 'DELETE' request to SERVICE-AND-PARAMS.
 
@@ -360,6 +381,7 @@ You can also set your login credentials using
 
 (global-set-key (kbd "C-x C-a P") 'anx-send-buffer)
 (global-set-key (kbd "C-x C-a G") 'anx-get)
+(global-set-key (kbd "C-x C-a g") 'rml/get)
 (global-set-key (kbd "C-x C-a D") 'anx-delete)
 
 (global-set-key (kbd "C-x C-a U") 'anx-unescape-json)
