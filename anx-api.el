@@ -46,25 +46,18 @@
   :group 'anx
   :type '(string))
 
-;;------------------------------------------------------------------
-;; FIXME: Incorporate this into the code:
-(defvar *anx-buffer-save-dir* nil)
+(defcustom anx-save-directory nil
+  "The directory where you'd like to save things.
 
-(setq *anx-buffer-save-dir* "/Users/rloveland/work/code/api/elisp/")
+Right now only `anx-save-buffer-contents' uses this."
+  :group 'anx
+  :type '(string))
 
-(defun anx-save-buffer-contents ()
-  (interactive)
-  (write-file
-   (expand-file-name
-    (concat *anx-buffer-save-dir*
-	    (replace-regexp-in-string "/" "_"
-				      (buffer-name))
-	    "_"
-	    (replace-regexp-in-string " " "_"
-				      (current-time-string))))))
-
-(global-set-key (kbd "C-x C-a s") 'anx-save-buffer-contents)
-;;------------------------------------------------------------------
+(defcustom anx-use-global-keybindings nil
+  "If t, use the global keybindings, prefixed with 'C-x C-a'."
+  :group 'anx
+  :type '(string)
+  :options '(t nil))
 
 ;; Variables
 
@@ -284,7 +277,7 @@ response in a new Lisp buffer."
 ;; Generic GET request -- this should probably live somewhere else
 ;; eventually, when this code grows up and gets refactored properly...
 
-(defun rml/get (url)
+(defun anx-raw-get (url)
   "Send a 'GET' request to URL.
 
 Prompts for URL in the minibuffer and opens the
@@ -337,7 +330,11 @@ Opens the response in a new buffer."
 
 (defun anx-browse-api-docs ()
   "Search the AppNexus Console API documentation for the symbol at point.
-Opens the results in whatever web browser is preferred by `browse-url'."
+Opens the results in whatever web browser is preferred by `browse-url'.
+
+This only works well if the symbol at point is an object name
+corresponding to one of our API services, such as 'placement',
+'campaign', &c."
   (interactive)
   (browse-url
    (concat "https://wiki.appnexus.com/dosearchsite.action?"
@@ -366,28 +363,48 @@ You can also set your login credentials using
       (setq *anx-current-url* *anx-production-url*)
     (setq *anx-current-url* *anx-sandbox-url*)))
 
+(defun anx-save-buffer-contents ()
+  "Save the current buffer's contents to a new file in `anx-save-directory'.
+
+The filename is ugly but informative; it includes the URL the
+content originated from and the current date and time."
+  (interactive)
+  (write-file
+   (expand-file-name
+    (concat anx-save-directory
+	    (replace-regexp-in-string "/" "_"
+				      (buffer-name))
+	    "_"
+	    (replace-regexp-in-string " " "_"
+				      (current-time-string))))))
+
 ;; Keybindings
 
-(global-set-key (kbd "C-x C-a A") 'anx-authenticate)
-(global-set-key (kbd "C-x C-a a") 'anx-get-user-authentication-credentials)
-(global-set-key (kbd "C-x C-a S") 'anx-switch-users)
+(if anx-use-global-keybindings
+    (progn
+      (global-set-key (kbd "C-x C-a A") 'anx-authenticate)
+      (global-set-key (kbd "C-x C-a a") 'anx-get-user-authentication-credentials)
+      (global-set-key (kbd "C-x C-a S") 'anx-switch-users)
 
-(global-set-key (kbd "C-x C-a W") 'anx-who-am-i)
-(global-set-key (kbd "C-x C-a w") 'anx-display-current-api-url)
-(global-set-key (kbd "C-x C-a T") 'anx-toggle-current-api-url)
+      (global-set-key (kbd "C-x C-a W") 'anx-who-am-i)
+      (global-set-key (kbd "C-x C-a w") 'anx-display-current-api-url)
+      (global-set-key (kbd "C-x C-a T") 'anx-toggle-current-api-url)
 
-(global-set-key (kbd "C-x C-a J") 'anx-lisp-to-json)
-(global-set-key (kbd "C-x C-a L") 'anx-json-to-lisp)
+      (global-set-key (kbd "C-x C-a J") 'anx-lisp-to-json)
+      (global-set-key (kbd "C-x C-a L") 'anx-json-to-lisp)
 
-(global-set-key (kbd "C-x C-a P") 'anx-send-buffer)
-(global-set-key (kbd "C-x C-a G") 'anx-get)
-(global-set-key (kbd "C-x C-a g") 'rml/get)
-(global-set-key (kbd "C-x C-a D") 'anx-delete)
+      (global-set-key (kbd "C-x C-a P") 'anx-send-buffer)
+      (global-set-key (kbd "C-x C-a G") 'anx-get)
+      (global-set-key (kbd "C-x C-a g") 'anx-raw-get)
+      (global-set-key (kbd "C-x C-a D") 'anx-delete)
 
-(global-set-key (kbd "C-x C-a U") 'anx-unescape-json)
-(global-set-key (kbd "C-x C-a E") 'anx-escape-json)
+      (global-set-key (kbd "C-x C-a U") 'anx-unescape-json)
+      (global-set-key (kbd "C-x C-a E") 'anx-escape-json)
 
-(global-set-key (kbd "C-x C-a d") 'anx-browse-api-docs)
+      (global-set-key (kbd "C-x C-a s") 'anx-save-buffer-contents)
+
+      (global-set-key (kbd "C-x C-a d") 'anx-browse-api-docs))
+  nil)
 
 (provide 'anx-api)
 
